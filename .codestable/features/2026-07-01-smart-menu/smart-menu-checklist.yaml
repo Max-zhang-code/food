@@ -1,0 +1,112 @@
+feature: 2026-07-01-smart-menu
+created: 2026-07-01
+
+steps:
+  - action: "项目骨架：CLI 创建 uni-app Vue 3 项目 → pages.json（7 条路由 + order/manage 分包 + 3 tab tabBar）→ 微信云开发初始化"
+    exit_signal: "npm run dev:mp-weixin 编译成功，微信开发者工具能看到 3 个 tab 占位页"
+    status: pending
+
+  - action: "数据层：创建 ingredients / dishes / orders / settings / users 五个集合 → 定义权限规则 → 录入食材测试数据 + settings 中配置审核人（含 openid + 微信昵称 + 头像）"
+    exit_signal: "云开发控制台能看到 5 个集合和数据，权限规则已保存，审核人信息含头像昵称"
+    status: pending
+
+  - action: "云函数：实现 login / getMatchedDishes / submitOrder / getOrders / completeOrder / submitDish / resubmitDish / approveDish / rejectDish / getPendingDishes / getMySubmissions 十一个云函数 → 本地调试"
+    exit_signal: "每个云函数在微信开发者工具云函数测试面板跑通正常路径和至少一条错误路径"
+    status: pending
+
+  - action: "登录 + 首页点菜：微信登录 → 食材选择页 → getMatchedDishes 菜品匹配（只返回 approved）→ 菜单展示 → 购物车 add/remove → submitOrder 下单"
+    exit_signal: "从打开小程序到完成下单全流程走通，使用真实测试数据，订单写入数据库"
+    status: pending
+
+  - action: "菜品提交：提交新菜品页（表单 + 食材多选 + 图片上传）→ submitDish → 我的提交页查看状态（pending/rejected）"
+    exit_signal: "提交菜品后在我的提交页能看到 pending 状态，数据库写入正确"
+    status: pending
+
+  - action: "审核 + 驳回重提：审核页 → getPendingDishes → approveDish 通过 / rejectDish 驳回 → 首页菜品池更新 → 驳回后提交人在我的提交页点"编辑"→ resubmitDish 重提 → 重新进入审核队列"
+    exit_signal: "审核通过后菜品出现在首页；驳回后提交人可见 rejected + 编辑按钮；编辑重提后状态回到 pending"
+    status: pending
+
+  - action: "订单管理 + 边界收尾：历史/进行中订单页 → 完成订单 → 全部边界态（空购物车、无匹配、登录失败、网络异常、缺字段、重复菜名、非审核人隐藏审核入口）"
+    exit_signal: "全部 7 个页面的正常态 + 边界态肉眼验证通过，页面间导航流畅无白屏"
+    status: pending
+
+  - action: "harden：数据库权限越权测试 → 审核人校验（非审核人调敏感云函数返回 NOT_APPROVER）→ 菜品重复检测 → 下单防重复 → 移除全部调试代码 → 分包体积检查"
+    exit_signal: "未登录/非审核人无法调用敏感云函数，无 console.log/debugger/TODO 残留，主包 < 2MB，分包 < 2MB"
+    status: pending
+
+checks:
+  - item: "ingredients 集合 Schema：name / category / icon / createdAt"
+    source: 名词契约
+    status: pending
+
+  - item: "dishes 集合 Schema：name / description / image / cooking_time / ingredient_ids / status / submitted_by / submitted_by_name / submitted_at / approved_by / approved_at / createdAt"
+    source: 名词契约
+    status: pending
+
+  - item: "orders 集合 Schema：user_openid / user_name / items / status / created_at / completed_at"
+    source: 名词契约
+    status: pending
+
+  - item: "settings 集合：approvers 文档含 approvers 数组（每项含 openid / nickName / avatarUrl）"
+    source: 名词契约
+    status: pending
+
+  - item: "users 集合：openid 作 _id / nickName / avatarUrl / lastLoginAt，每次 login 时 upsert"
+    source: 名词契约
+    status: pending
+
+  - item: "useMenuStore / useCartStore / useOrderStore / useUserStore / useDishManageStore 五个 store 与设计接口签名一致"
+    source: 名词契约
+    status: pending
+
+  - item: "点菜主流程：登录 → 食材选择 → getMatchedDishes（只返回 approved）→ 购物车 → submitOrder 全链路可走通"
+    source: 编排骨架
+    status: pending
+
+  - item: "菜品全流程：submitDish → pending → approveDish/rejectDish → approved 出现在首页 / rejected → resubmitDish → 重新 pending → 审核通过"
+    source: 编排骨架
+    status: pending
+
+  - item: "流程级约束：登录前置 + 下单防重复 + 订单状态机 + 菜品状态机（pending↔approved/rejected） + 审核人校验（云函数端） + 菜品重复名检测 + 已上架菜品不可编辑"
+    source: 流程级约束
+    status: pending
+
+  - item: "挂载点 1-6：pages.json（7 路由/2 分包/3 tab）+ 11 个云函数 + 5 个集合 + app.vue 登录 全部就位"
+    source: 挂载点
+    status: pending
+
+  - item: "无支付 API 调用或金额字段"
+    source: 范围守护
+    status: pending
+
+  - item: "用户标识仅使用微信 openid，无手机号/邮箱/密码"
+    source: 范围守护
+    status: pending
+
+  - item: "ingredients 集合无 quantity/stock/expiry 字段"
+    source: 范围守护
+    status: pending
+
+  - item: "无更新已上架菜品的云函数（resubmitDish 仅作用于 rejected 状态）"
+    source: 范围守护
+    status: pending
+
+  - item: "全部 21 条验收场景 (S1-S21) 有可观察证据"
+    source: 验收场景
+    status: pending
+
+dod:
+  commands:
+    - id: CMD-001
+      command: "npm run dev:mp-weixin"
+      core: true
+      failure_handling: fix-or-block
+    - id: CMD-002
+      command: "npm run lint"
+      core: false
+      failure_handling: fix-or-block
+  evidence_required: [screenshots, database_query_log, cloud_function_test_log]
+  cleanliness:
+    debug_output: forbidden
+    todo_fixme: forbidden
+    dead_imports: forbidden
