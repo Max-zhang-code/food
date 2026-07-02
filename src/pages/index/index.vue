@@ -54,6 +54,8 @@
       <text class="cart-count">{{ cartStore.totalCount }}</text>
       <text class="cart-text">已选菜品，查看购物车</text>
     </view>
+
+    <AppTabBar :current="0" />
   </view>
 </template>
 
@@ -61,6 +63,7 @@
 import { onMounted } from 'vue'
 import { useMenuStore } from '@/stores/menu'
 import { useCartStore } from '@/stores/cart'
+import AppTabBar from '@/components/app-tab-bar/AppTabBar.vue'
 
 const menuStore = useMenuStore()
 const cartStore = useCartStore()
@@ -76,7 +79,7 @@ const goToCart = () => {
 </script>
 
 <style scoped>
-.container { padding: 20rpx; padding-bottom: 140rpx; }
+.container { padding: 20rpx; padding-bottom: calc(140rpx + env(safe-area-inset-bottom)); }
 
 .section-title { font-size: 32rpx; font-weight: bold; margin: 20rpx 0; }
 .section-title .count { font-size: 26rpx; color: #999; font-weight: normal; }
@@ -101,7 +104,9 @@ const goToCart = () => {
 .add-btn { flex-shrink: 0; margin-left: 16rpx; background: #07C160; color: #fff; border: none; }
 
 .cart-bar {
-  position: fixed; bottom: 0; left: 0; right: 0;
+  position: fixed;
+  bottom: calc(100rpx + env(safe-area-inset-bottom));
+  left: 0; right: 0;
   background: #07C160; color: #fff; padding: 24rpx 40rpx;
   display: flex; align-items: center; gap: 20rpx; z-index: 100;
 }

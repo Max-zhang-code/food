@@ -49,12 +49,15 @@
       </view>
       <view v-if="hasMore" class="load-more" @click="loadMore">加载更多</view>
     </view>
+
+    <AppTabBar :current="1" />
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useOrderStore } from '@/stores/order'
+import AppTabBar from '@/components/app-tab-bar/AppTabBar.vue'
 
 const orderStore = useOrderStore()
 const currentTab = ref<'active' | 'history'>('active')
@@ -108,6 +111,7 @@ onMounted(() => fetchActive())
 </script>
 
 <style scoped>
+.container { padding-bottom: calc(120rpx + env(safe-area-inset-bottom)); }
 .tabs { display: flex; border-bottom: 1px solid #eee; background: #fff; }
 .tab {
   flex: 1; text-align: center; padding: 24rpx; font-size: 28rpx; color: #666;

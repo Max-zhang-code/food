@@ -1,0 +1,21 @@
+# Cursor Rules — 智能点菜小程序
+
+## 语言
+
+- 始终使用**中文**回复、注释、文档说明
+- Git commit message 使用**中文**，格式：`类型: 简述`
+  - 类型：新增 / 修复 / 重构 / 优化 / 文档 / 配置
+  - 示例：`新增: 底部导航栏抽成 AppTabBar 组件`
+
+## 技术栈
+
+- uni-app Vue 3 + TypeScript + Pinia
+- 微信云开发（云函数 + 云数据库）
+- 编译目标：微信小程序
+
+## 约定
+
+- 用 `<script setup lang="ts">`
+- import 路径用 `@/` 别名
+- 页面放在 `src/pages/`，组件放在 `src/components/`
+- 改动后验证 `npm run type-check` 和 `npm run build:mp-weixin`

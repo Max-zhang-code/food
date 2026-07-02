@@ -37,6 +37,7 @@ CodeStable 所有落盘产出的正文用**中文**：plan / design、plan revie
 ### 路径与目录约定
 
 - uni-app 标准项目结构：`pages/`（页面）、`components/`（组件）、`stores/`（Pinia）、`cloudfunctions/`（微信云函数）
+- 微信小程序自定义 tabBar：用 `components/app-tab-bar/AppTabBar.vue` 在各 tab 页显式引入；勿用 `custom-tab-bar/index.vue`（mp-weixin 不编译该路径）
 - `.codestable/tools/` 下 Python 脚本使用 `python` 调用
 
 ### 环境变量与凭证

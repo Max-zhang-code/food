@@ -3,6 +3,8 @@ import { onLaunch } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
 
 onLaunch(async () => {
+  uni.hideTabBar({ animation: false })
+
   const userStore = useUserStore()
   try {
     await userStore.login()

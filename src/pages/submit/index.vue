@@ -22,14 +22,30 @@
       <button class="upload-btn" @click="chooseImage">
         {{ form.image ? '重新选择' : '选择图片' }}
       </button>
-      <image v-if="form.image" :src="form.image" class="preview-img" mode="aspectFill" />
+      <image
+        v-if="form.image"
+        :src="form.image"
+        class="preview-img"
+        mode="aspectFill"
+        @click="previewImage"
+      />
     </view>
 
     <view class="form-item">
       <text class="label">所需食材 *</text>
-      <view class="ingredient-select">
+      <view class="ingredient-search">
+        <input
+          v-model="ingredientSearch"
+          class="search-input"
+          placeholder="搜索食材..."
+        />
+      </view>
+      <view v-if="filteredIngredients.length === 0" class="ing-empty">
+        {{ allIngredients.length === 0 ? '加载中...' : '未找到匹配食材' }}
+      </view>
+      <view v-else class="ingredient-select">
         <view
-          v-for="ing in allIngredients"
+          v-for="ing in filteredIngredients"
           :key="ing._id"
           class="ing-tag"
           :class="{ selected: form.ingredient_ids.includes(ing._id) }"
@@ -37,6 +53,9 @@
         >
           {{ ing.name }}
         </view>
+      </view>
+      <view v-if="form.ingredient_ids.length > 0" class="ing-count">
+        已选 {{ form.ingredient_ids.length }} 种食材
       </view>
     </view>
 
@@ -47,17 +66,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useDishManageStore } from '@/stores/dish-manage'
 import { useMenuStore } from '@/stores/menu'
 
 const dishStore = useDishManageStore()
 const menuStore = useMenuStore()
 const allIngredients = ref<any[]>([])
+const ingredientSearch = ref('')
 const submitting = ref(false)
 
 const isEditing = ref(false)
 const editingId = ref('')
+
+const filteredIngredients = computed(() => {
+  const keyword = ingredientSearch.value.trim().toLowerCase()
+  if (!keyword) return allIngredients.value
+  return allIngredients.value.filter((ing: any) =>
+    ing.name.toLowerCase().includes(keyword)
+  )
+})
 
 const form = reactive({
   name: '',
@@ -125,6 +153,15 @@ const chooseImage = () => {
   })
 }
 
+const previewImage = () => {
+  if (form.image) {
+    uni.previewImage({
+      urls: [form.image],
+      current: form.image,
+    })
+  }
+}
+
 const handleSubmit = async () => {
   if (!form.name || form.ingredient_ids.length === 0) {
     uni.showToast({ title: '请填写菜品名和食材', icon: 'none' })
@@ -161,6 +198,13 @@ const handleSubmit = async () => {
   padding: 12rpx 24rpx; background: #f0f0f0; border-radius: 32rpx; font-size: 26rpx;
 }
 .ing-tag.selected { background: #07C160; color: #fff; }
+.ing-search { margin-bottom: 16rpx; }
+.search-input {
+  border: 1px solid #e0e0e0; border-radius: 12rpx; padding: 12rpx 20rpx;
+  font-size: 26rpx; background: #fff;
+}
+.ing-empty { padding: 40rpx; text-align: center; color: #999; font-size: 26rpx; }
+.ing-count { margin-top: 16rpx; font-size: 24rpx; color: #07C160; text-align: right; }
 .submit-btn {
   background: #07C160; color: #fff; border: none;
   width: 100%; margin-top: 40rpx; padding: 24rpx;

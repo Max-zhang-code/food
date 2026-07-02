@@ -39,6 +39,8 @@
         >编辑</button>
       </view>
     </view>
+
+    <AppTabBar :current="2" />
   </view>
 </template>
 
@@ -46,6 +48,7 @@
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useDishManageStore } from '@/stores/dish-manage'
+import AppTabBar from '@/components/app-tab-bar/AppTabBar.vue'
 
 const userStore = useUserStore()
 const dishStore = useDishManageStore()
@@ -75,7 +78,7 @@ const editDish = (dish: any) => uni.navigateTo({ url: `/pages/submit/index?dishI
 </script>
 
 <style scoped>
-.container { padding: 20rpx; }
+.container { padding: 20rpx; padding-bottom: calc(120rpx + env(safe-area-inset-bottom)); }
 .user-card {
   display: flex; align-items: center; gap: 16rpx;
   background: #fff; border-radius: 16rpx; padding: 30rpx; margin-bottom: 20rpx;

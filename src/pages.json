@@ -45,6 +45,7 @@
     }
   ],
   "tabBar": {
+    "custom": true,
     "color": "#999999",
     "selectedColor": "#07C160",
     "borderStyle": "black",
@@ -52,21 +53,15 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "点菜",
-        "iconPath": "static/tab/menu.png",
-        "selectedIconPath": "static/tab/menu-active.png"
+        "text": "点菜"
       },
       {
         "pagePath": "pages/order/index",
-        "text": "订单",
-        "iconPath": "static/tab/menu.png",
-        "selectedIconPath": "static/tab/menu-active.png"
+        "text": "订单"
       },
       {
         "pagePath": "pages/mine/index",
-        "text": "我的",
-        "iconPath": "static/tab/menu.png",
-        "selectedIconPath": "static/tab/menu-active.png"
+        "text": "我的"
       }
     ]
   },

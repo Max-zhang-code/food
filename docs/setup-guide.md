@@ -63,6 +63,16 @@
 - [ ] 上传全部 11 个云函数（在微信开发者工具中右键每个云函数目录 → 上传并部署）
 - [ ] uploadDish (11个): login, getMatchedDishes, submitOrder, getOrders, completeOrder, submitDish, resubmitDish, approveDish, rejectDish, getPendingDishes, getMySubmissions
 
+### 开发调试不占额度
+
+开发期间**开启云函数本地调试**，云函数调用不消耗免费额度：
+
+1. 微信开发者工具 → 左侧栏"云开发" → 展开 `cloudfunctions/`
+2. 右键**每个云函数目录** → "开启云函数本地调试"
+3. 开启后云函数在你本机运行，调用次数不计入每月 20 万次限额
+
+> 数据库读写仍然走云端，但免费额度 150 万次读/月，开发阶段远远用不完，正常调试即可。
+
 ## 四、编译与预览
 
 - [ ] 运行 `npm run dev:mp-weixin`（开发模式）或 `npm run build:mp-weixin`（生产模式）
