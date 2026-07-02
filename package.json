@@ -30,6 +30,8 @@
     "build:mp-toutiao": "uni build -p mp-toutiao",
     "build:mp-harmony": "uni build -p mp-harmony",
     "build:mp-weixin": "powershell -Command \"[Console]::OutputEncoding = [Text.Encoding]::UTF8; uni build -p mp-weixin 2>&1 | ForEach-Object { Write-Host ('[' + (Get-Date -Format 'HH:mm:ss') + ']') -NoNewline; Write-Host ' ' $_ }\"",
+    "postbuild:mp-weixin": "powershell -Command \"if (Test-Path dist/build/mp-weixin) { Copy-Item -Recurse -Force cloudfunctions dist/build/mp-weixin/cloudfunctions }\"",
+    "postdev:mp-weixin": "powershell -Command \"if (Test-Path dist/dev/mp-weixin) { Copy-Item -Recurse -Force cloudfunctions dist/dev/mp-weixin/cloudfunctions }\"",
     "build:mp-xhs": "uni build -p mp-xhs",
     "build:quickapp-webview": "uni build -p quickapp-webview",
     "build:quickapp-webview-huawei": "uni build -p quickapp-webview-huawei",

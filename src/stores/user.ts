@@ -17,7 +17,7 @@ export const useUserStore = defineStore('user', () => {
     try {
       // 调用微信登录 + 云函数 login
       const { code } = await uni.login()
-      const res = await uniCloud.callFunction({
+      const res = await wx.cloud.callFunction({
         name: 'login',
         data: { code }
       })

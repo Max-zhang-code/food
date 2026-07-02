@@ -141,7 +141,7 @@ const chooseImage = () => {
         }
 
         const cloudPath = `dishes/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.jpg`
-        const uploadRes = await uniCloud.uploadFile({ cloudPath, filePath: uploadPath })
+        const uploadRes = await wx.cloud.uploadFile({ cloudPath, filePath: uploadPath })
         form.image = uploadRes.fileID
       } catch (e: any) {
         uni.showToast({ title: '图片上传失败，请重试', icon: 'none' })

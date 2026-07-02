@@ -3,7 +3,8 @@ import { onLaunch } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
 
 onLaunch(async () => {
-  uni.hideTabBar({ animation: false })
+  // 初始化微信云开发（CLI 项目必须手动 init）
+  wx.cloud.init({ env: 'cloudbase-d4gszdfotaac057f6' })
 
   const userStore = useUserStore()
   try {

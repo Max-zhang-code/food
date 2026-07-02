@@ -11,7 +11,7 @@ interface DishFormData {
 export const useDishManageStore = defineStore('dish-manage', () => {
 
   const submitDish = async (data: DishFormData) => {
-    const res = await uniCloud.callFunction({
+    const res = await wx.cloud.callFunction({
       name: 'submitDish',
       data,
     })
@@ -21,7 +21,7 @@ export const useDishManageStore = defineStore('dish-manage', () => {
   }
 
   const resubmitDish = async (dish_id: string, data: DishFormData) => {
-    const res = await uniCloud.callFunction({
+    const res = await wx.cloud.callFunction({
       name: 'resubmitDish',
       data: { dish_id, ...data },
     })
@@ -31,7 +31,7 @@ export const useDishManageStore = defineStore('dish-manage', () => {
   }
 
   const fetchPendingDishes = async () => {
-    const res = await uniCloud.callFunction({
+    const res = await wx.cloud.callFunction({
       name: 'getPendingDishes',
       data: {},
     })
@@ -41,7 +41,7 @@ export const useDishManageStore = defineStore('dish-manage', () => {
   }
 
   const approveDish = async (dish_id: string) => {
-    const res = await uniCloud.callFunction({
+    const res = await wx.cloud.callFunction({
       name: 'approveDish',
       data: { dish_id },
     })
@@ -51,7 +51,7 @@ export const useDishManageStore = defineStore('dish-manage', () => {
   }
 
   const rejectDish = async (dish_id: string) => {
-    const res = await uniCloud.callFunction({
+    const res = await wx.cloud.callFunction({
       name: 'rejectDish',
       data: { dish_id },
     })
@@ -61,7 +61,7 @@ export const useDishManageStore = defineStore('dish-manage', () => {
   }
 
   const fetchMySubmissions = async () => {
-    const res = await uniCloud.callFunction({
+    const res = await wx.cloud.callFunction({
       name: 'getMySubmissions',
       data: {},
     })

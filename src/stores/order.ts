@@ -9,7 +9,7 @@ interface CartItem {
 export const useOrderStore = defineStore('order', () => {
 
   const submitOrder = async (items: CartItem[]) => {
-    const res = await uniCloud.callFunction({
+    const res = await wx.cloud.callFunction({
       name: 'submitOrder',
       data: { items },
     })
@@ -19,7 +19,7 @@ export const useOrderStore = defineStore('order', () => {
   }
 
   const fetchActiveOrders = async () => {
-    const res = await uniCloud.callFunction({
+    const res = await wx.cloud.callFunction({
       name: 'getOrders',
       data: { status: 'active', page: 1, pageSize: 50 },
     })
@@ -29,7 +29,7 @@ export const useOrderStore = defineStore('order', () => {
   }
 
   const fetchHistoryOrders = async (page: number) => {
-    const res = await uniCloud.callFunction({
+    const res = await wx.cloud.callFunction({
       name: 'getOrders',
       data: { status: 'completed', page, pageSize: 20 },
     })
@@ -39,7 +39,7 @@ export const useOrderStore = defineStore('order', () => {
   }
 
   const completeOrder = async (order_id: string) => {
-    const res = await uniCloud.callFunction({
+    const res = await wx.cloud.callFunction({
       name: 'completeOrder',
       data: { order_id },
     })

@@ -29,9 +29,9 @@ export const useMenuStore = defineStore('menu', () => {
 
   const fetchAllIngredients = async () => {
     try {
-      const db = uniCloud.database()
+      const db = wx.cloud.database()
       const res = await db.collection('ingredients').get()
-      ingredients.value = (res.result?.data || []) as Ingredient[]
+      ingredients.value = (res.data || []) as Ingredient[]
     } catch (e: any) {
       console.error('获取食材列表失败:', e.message)
     }
@@ -51,17 +51,17 @@ export const useMenuStore = defineStore('menu', () => {
       const ids = Array.from(selectedIngredientIds.value)
       if (ids.length === 0) {
         // 未选食材时加载全部已上架菜品
-        const db = uniCloud.database()
+        const db = wx.cloud.database()
         const res = await db.collection('dishes')
           .where({ status: 'approved' })
           .get()
-        dishes.value = (res.result?.data || []).map((d: any) => ({
+        dishes.value = (res.data || []).map((d: any) => ({
           ...d,
           matched_count: d.ingredient_ids?.length || 0,
           total_count: d.ingredient_ids?.length || 0,
         }))
       } else {
-        const res = await uniCloud.callFunction({
+        const res = await wx.cloud.callFunction({
           name: 'getMatchedDishes',
           data: { ingredient_ids: ids }
         })
