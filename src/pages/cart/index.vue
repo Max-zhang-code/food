@@ -50,6 +50,7 @@ const handleSubmit = async () => {
   try {
     await orderStore.submitOrder(cartStore.items)
     cartStore.clear()
+    wx.setStorageSync('forceOrderRefresh', true)
     uni.showToast({ title: '下单成功！', icon: 'success' })
     setTimeout(() => uni.switchTab({ url: '/pages/order/index' }), 1000)
   } catch (e: any) {

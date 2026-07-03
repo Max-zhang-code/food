@@ -146,6 +146,23 @@ const otherUsers = computed(() =>
 
 const isOwnOrder = (order: any) => order.user_openid === myOpenid
 
+let lastFetchTime = 0
+const CACHE_TTL = 30000 // 30 秒内不重复拉取
+
+const fetchActiveIfStale = () => {
+  const now = Date.now()
+  if (now - lastFetchTime > CACHE_TTL) {
+    lastFetchTime = now
+    fetchActive()
+  }
+}
+
+const forceRefresh = () => {
+  lastFetchTime = 0
+  if (currentTab.value === 'active') fetchActive()
+  else { page.value = 1; historyOrders.value = []; fetchHistory() }
+}
+
 const switchTab = (tab: 'active' | 'history') => {
   currentTab.value = tab
   if (tab === 'active') fetchActive()
@@ -182,7 +199,7 @@ const handleComplete = async (orderId: string) => {
   try {
     await orderStore.completeOrder(orderId)
     uni.showToast({ title: '已完成', icon: 'success' })
-    fetchActive()
+    forceRefresh()
   } catch (e: any) {
     uni.showToast({ title: e.message || '操作失败', icon: 'none' })
   }
@@ -197,8 +214,7 @@ const handleRevoke = (orderId: string) => {
       try {
         await orderStore.revokeOrder(orderId)
         uni.showToast({ title: '已撤销', icon: 'success' })
-        if (currentTab.value === 'active') fetchActive()
-        else { page.value = 1; historyOrders.value = []; fetchHistory() }
+        forceRefresh()
       } catch (e: any) {
         uni.showToast({ title: e.message || '撤销失败', icon: 'none' })
       }
@@ -215,7 +231,7 @@ const handleDelete = (orderId: string) => {
       try {
         await orderStore.deleteOrder(orderId)
         uni.showToast({ title: '已删除', icon: 'success' })
-        page.value = 1; historyOrders.value = []; fetchHistory()
+        forceRefresh()
       } catch (e: any) {
         uni.showToast({ title: e.message || '删除失败', icon: 'none' })
       }
@@ -224,8 +240,15 @@ const handleDelete = (orderId: string) => {
 }
 
 const fetchUsers = async () => {
+  // 先读缓存立即渲染筛选栏
+  const cached = wx.getStorageSync('orderUsers')
+  if (cached && cached.length > 0) {
+    orderUsers.value = cached
+  }
   try {
-    orderUsers.value = await orderStore.fetchOrderUsers()
+    const users = await orderStore.fetchOrderUsers()
+    orderUsers.value = users
+    wx.setStorageSync('orderUsers', users)
   } catch (e) {
     console.warn('[order] fetchUsers failed:', e)
   }
@@ -237,7 +260,13 @@ const formatTime = (d: Date | string) => {
 }
 
 onShow(() => {
-  fetchActive()
+  // 购物车下单后强制刷新
+  if (wx.getStorageSync('forceOrderRefresh')) {
+    wx.removeStorageSync('forceOrderRefresh')
+    forceRefresh()
+  } else {
+    fetchActiveIfStale()
+  }
   fetchUsers()
 })
 </script>

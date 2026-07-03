@@ -29,21 +29,32 @@ export const useMenuStore = defineStore('menu', () => {
   const isSelected = (id: string) => selectedIngredientIds.value.has(id)
 
   const fetchAllIngredients = async () => {
+    // 先读缓存立即渲染
+    const cached = wx.getStorageSync('ingredients')
+    if (cached && cached.length > 0) {
+      ingredients.value = cached as Ingredient[]
+    }
     try {
       const db = wx.cloud.database()
       const res = await db.collection('ingredients').get()
-      ingredients.value = (res.data || []) as Ingredient[]
+      const data = (res.data || []) as Ingredient[]
+      ingredients.value = data
+      wx.setStorageSync('ingredients', data)
     } catch (e: any) {
       console.error('获取食材列表失败:', e.message)
     }
   }
+
+  let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
   const toggleIngredient = (id: string) => {
     const s = new Set(selectedIngredientIds.value)
     if (s.has(id)) s.delete(id)
     else s.add(id)
     selectedIngredientIds.value = s
-    fetchMatchedDishes()
+    // 300ms 防抖：快速点击多个食材只发最后一次请求
+    if (debounceTimer) clearTimeout(debounceTimer)
+    debounceTimer = setTimeout(() => fetchMatchedDishes(), 300)
   }
 
   const fetchMatchedDishes = async () => {
