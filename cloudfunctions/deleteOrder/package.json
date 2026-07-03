@@ -1,0 +1,9 @@
+{
+  "name": "deleteOrder",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  },
+  "description": "硬删除订单（仅本人可删除已撤销的订单）"
+}

@@ -57,14 +57,14 @@
         </view>
         <view v-for="item in order.items" :key="item.dish_id" class="order-item">
           <text>{{ item.dish_name }} × {{ item.quantity }}</text>
-        </view>
-        <view class="order-footer">
           <button
             v-if="isOwnOrder(order)"
             size="mini"
             class="revoke-btn"
             @click="handleRevoke(order._id)"
           >撤销</button>
+        </view>
+        <view class="order-footer">
           <button size="mini" class="complete-btn" @click="handleComplete(order._id)">
             完成
           </button>
@@ -89,15 +89,21 @@
         </view>
         <view v-for="item in order.items" :key="item.dish_id" class="order-item">
           <text>{{ item.dish_name }} × {{ item.quantity }}</text>
-        </view>
-        <view class="order-footer">
-          <text v-if="order.status === 'revoked'" class="revoked-tag">已撤销</text>
           <button
-            v-else-if="isOwnOrder(order)"
+            v-if="isOwnOrder(order) && order.status !== 'revoked'"
             size="mini"
             class="revoke-btn"
             @click="handleRevoke(order._id)"
           >撤销</button>
+        </view>
+        <view class="order-footer">
+          <text v-if="order.status === 'revoked'" class="revoked-tag">已撤销</text>
+          <button
+            v-if="order.status === 'revoked' && isOwnOrder(order)"
+            size="mini"
+            class="delete-btn"
+            @click="handleDelete(order._id)"
+          >删除</button>
         </view>
       </view>
       <view v-if="hasMore" class="load-more" @click="loadMore">加载更多</view>
@@ -196,6 +202,23 @@ const handleRevoke = (orderId: string) => {
   })
 }
 
+const handleDelete = (orderId: string) => {
+  uni.showModal({
+    title: '删除订单',
+    content: '确定要删除这个订单吗？删除后不可恢复。',
+    success: async (res) => {
+      if (!res.confirm) return
+      try {
+        await orderStore.deleteOrder(orderId)
+        uni.showToast({ title: '已删除', icon: 'success' })
+        page.value = 1; historyOrders.value = []; fetchHistory()
+      } catch (e: any) {
+        uni.showToast({ title: e.message || '删除失败', icon: 'none' })
+      }
+    },
+  })
+}
+
 const fetchUsers = async () => {
   try {
     orderUsers.value = await orderStore.fetchOrderUsers()
@@ -246,11 +269,12 @@ onShow(() => {
 .order-avatar-placeholder { width: 48rpx; height: 48rpx; border-radius: 50%; background: #e0e0e0; flex-shrink: 0; }
 .order-user { font-weight: bold; font-size: 28rpx; }
 .order-time { font-size: 24rpx; color: #999; margin-left: auto; flex-shrink: 0; }
-.order-item { font-size: 26rpx; color: #333; padding: 8rpx 0; }
-.order-footer { display: flex; justify-content: flex-end; align-items: center; gap: 16rpx; margin-top: 16rpx; }
+.order-item { display: flex; justify-content: space-between; align-items: center; font-size: 26rpx; color: #333; padding: 8rpx 0; }
+.order-footer { text-align: right; margin-top: 16rpx; }
 .complete-btn { background: #07C160; color: #fff; border: none; }
 .revoke-btn { background: #fff; color: #fa5151; border: 1px solid #fa5151; }
 .revoked-tag { font-size: 24rpx; color: #999; }
+.delete-btn { background: #fff; color: #999; border: 1px solid #ddd; }
 
 .load-more { text-align: center; padding: 20rpx; color: #07C160; font-size: 26rpx; }
 .loading, .empty { text-align: center; padding: 80rpx; color: #999; font-size: 28rpx; }

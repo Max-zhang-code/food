@@ -64,6 +64,15 @@ export const useOrderStore = defineStore('order', () => {
     return data.order
   }
 
+  const deleteOrder = async (order_id: string) => {
+    const res = await wx.cloud.callFunction({
+      name: 'deleteOrder',
+      data: { order_id },
+    })
+    const data = res.result as any
+    if (data.code) throw new Error(data.message)
+  }
+
   const fetchOrderUsers = async (): Promise<OrderUser[]> => {
     const res = await wx.cloud.callFunction({
       name: 'getOrderUsers',
@@ -74,5 +83,5 @@ export const useOrderStore = defineStore('order', () => {
     return data.users || []
   }
 
-  return { submitOrder, fetchActiveOrders, fetchHistoryOrders, completeOrder, revokeOrder, fetchOrderUsers }
+  return { submitOrder, fetchActiveOrders, fetchHistoryOrders, completeOrder, revokeOrder, deleteOrder, fetchOrderUsers }
 })
