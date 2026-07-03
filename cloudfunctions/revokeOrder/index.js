@@ -24,29 +24,29 @@ exports.main = async (event, context) => {
 
     const order = orderDoc.data
 
-    // 仅提交人可取消自己的订单
+    // 仅提交人可撤销自己的订单
     if (order.user_openid !== OPENID) {
-      return { code: 'NOT_OWNER', message: '只能取消自己的订单' }
+      return { code: 'NOT_OWNER', message: '只能撤销自己的订单' }
     }
 
     // 幂等保护
-    if (order.status === 'cancelled') {
-      return { code: 'ALREADY_CANCELLED', message: '该订单已被取消' }
+    if (order.status === 'revoked') {
+      return { code: 'ALREADY_REVOKED', message: '该订单已被撤销' }
     }
 
     await db.collection('orders').doc(order_id).update({
       data: {
-        status: 'cancelled',
-        cancelled_at: new Date(),
+        status: 'revoked',
+        revoked_at: new Date(),
       },
     })
 
     return {
       success: true,
-      order: { _id: order_id, ...order, status: 'cancelled', cancelled_at: new Date() },
+      order: { ...order, status: 'revoked', revoked_at: new Date() },
     }
   } catch (e) {
-    console.error('cancelOrder error:', e)
-    return { code: 'CANCEL_FAILED', message: e.message }
+    console.error('revokeOrder error:', e)
+    return { code: 'REVOKE_FAILED', message: e.message }
   }
 }

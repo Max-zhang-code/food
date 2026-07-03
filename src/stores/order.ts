@@ -37,7 +37,7 @@ export const useOrderStore = defineStore('order', () => {
   const fetchHistoryOrders = async (page: number, user_openid?: string) => {
     const res = await wx.cloud.callFunction({
       name: 'getOrders',
-      data: { status: ['completed', 'cancelled'], page, pageSize: 20, user_openid },
+      data: { status: ['completed', 'revoked'], page, pageSize: 20, user_openid },
     })
     const data = res.result as any
     if (data.code) throw new Error(data.message)
@@ -54,9 +54,9 @@ export const useOrderStore = defineStore('order', () => {
     return data.order
   }
 
-  const cancelOrder = async (order_id: string) => {
+  const revokeOrder = async (order_id: string) => {
     const res = await wx.cloud.callFunction({
-      name: 'cancelOrder',
+      name: 'revokeOrder',
       data: { order_id },
     })
     const data = res.result as any
@@ -74,5 +74,5 @@ export const useOrderStore = defineStore('order', () => {
     return data.users || []
   }
 
-  return { submitOrder, fetchActiveOrders, fetchHistoryOrders, completeOrder, cancelOrder, fetchOrderUsers }
+  return { submitOrder, fetchActiveOrders, fetchHistoryOrders, completeOrder, revokeOrder, fetchOrderUsers }
 })

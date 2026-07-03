@@ -1,9 +1,9 @@
 {
-  "name": "cancelOrder",
+  "name": "revokeOrder",
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
     "wx-server-sdk": "latest"
   },
-  "description": "取消订单（软删除，仅提交人可取消）"
+  "description": "撤销订单（软删除，仅提交人可撤销）"
 }

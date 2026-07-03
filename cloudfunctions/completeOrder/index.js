@@ -22,7 +22,7 @@ exports.main = async (event, context) => {
       return { code: 'ORDER_NOT_FOUND', message: '订单不存在' }
     }
     if (orderDoc.data.status !== 'active') {
-      return { code: 'ALREADY_COMPLETED', message: '该订单已完成或已取消' }
+      return { code: 'ALREADY_COMPLETED', message: '该订单已完成或已撤销' }
     }
 
     await db.collection('orders').doc(order_id).update({

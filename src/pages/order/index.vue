@@ -62,9 +62,9 @@
           <button
             v-if="isOwnOrder(order)"
             size="mini"
-            class="cancel-btn"
-            @click="handleCancel(order._id)"
-          >取消</button>
+            class="revoke-btn"
+            @click="handleRevoke(order._id)"
+          >撤销</button>
           <button size="mini" class="complete-btn" @click="handleComplete(order._id)">
             完成
           </button>
@@ -79,25 +79,25 @@
         v-for="order in historyOrders"
         :key="order._id"
         class="order-card"
-        :class="{ cancelled: order.status === 'cancelled' }"
+        :class="{ revoked: order.status === 'revoked' }"
       >
         <view class="order-header">
           <image v-if="order.user_avatar" :src="order.user_avatar" class="order-avatar" />
           <view v-else class="order-avatar-placeholder" />
           <text class="order-user">{{ order.user_name }}</text>
-          <text class="order-time">{{ formatTime(order.completed_at || order.cancelled_at || order.created_at) }}</text>
+          <text class="order-time">{{ formatTime(order.completed_at || order.revoked_at || order.created_at) }}</text>
         </view>
         <view v-for="item in order.items" :key="item.dish_id" class="order-item">
           <text>{{ item.dish_name }} × {{ item.quantity }}</text>
         </view>
         <view class="order-footer">
-          <text v-if="order.status === 'cancelled'" class="cancelled-tag">已取消</text>
+          <text v-if="order.status === 'revoked'" class="revoked-tag">已撤销</text>
           <button
             v-else-if="isOwnOrder(order)"
             size="mini"
-            class="cancel-btn"
-            @click="handleCancel(order._id)"
-          >取消</button>
+            class="revoke-btn"
+            @click="handleRevoke(order._id)"
+          >撤销</button>
         </view>
       </view>
       <view v-if="hasMore" class="load-more" @click="loadMore">加载更多</view>
@@ -178,19 +178,19 @@ const handleComplete = async (orderId: string) => {
   }
 }
 
-const handleCancel = (orderId: string) => {
+const handleRevoke = (orderId: string) => {
   uni.showModal({
-    title: '取消订单',
-    content: '确定要取消这个订单吗？',
+    title: '撤销订单',
+    content: '确定要撤销这个订单吗？',
     success: async (res) => {
       if (!res.confirm) return
       try {
-        await orderStore.cancelOrder(orderId)
-        uni.showToast({ title: '已取消', icon: 'success' })
+        await orderStore.revokeOrder(orderId)
+        uni.showToast({ title: '已撤销', icon: 'success' })
         if (currentTab.value === 'active') fetchActive()
         else { page.value = 1; historyOrders.value = []; fetchHistory() }
       } catch (e: any) {
-        uni.showToast({ title: e.message || '取消失败', icon: 'none' })
+        uni.showToast({ title: e.message || '撤销失败', icon: 'none' })
       }
     },
   })
@@ -240,7 +240,7 @@ onShow(() => {
   background: #fff; border-radius: 12rpx; padding: 24rpx;
   margin: 16rpx 20rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
 }
-.order-card.cancelled { opacity: 0.5; }
+.order-card.revoked { opacity: 0.5; }
 .order-header { display: flex; align-items: center; gap: 12rpx; margin-bottom: 16rpx; }
 .order-avatar { width: 48rpx; height: 48rpx; border-radius: 50%; flex-shrink: 0; }
 .order-avatar-placeholder { width: 48rpx; height: 48rpx; border-radius: 50%; background: #e0e0e0; flex-shrink: 0; }
@@ -249,8 +249,8 @@ onShow(() => {
 .order-item { font-size: 26rpx; color: #333; padding: 8rpx 0; }
 .order-footer { display: flex; justify-content: flex-end; align-items: center; gap: 16rpx; margin-top: 16rpx; }
 .complete-btn { background: #07C160; color: #fff; border: none; }
-.cancel-btn { background: #fff; color: #fa5151; border: 1px solid #fa5151; }
-.cancelled-tag { font-size: 24rpx; color: #999; }
+.revoke-btn { background: #fff; color: #fa5151; border: 1px solid #fa5151; }
+.revoked-tag { font-size: 24rpx; color: #999; }
 
 .load-more { text-align: center; padding: 20rpx; color: #07C160; font-size: 26rpx; }
 .loading, .empty { text-align: center; padding: 80rpx; color: #999; font-size: 28rpx; }
