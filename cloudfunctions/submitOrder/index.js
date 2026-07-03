@@ -23,6 +23,7 @@ exports.main = async (event, context) => {
     const order = {
       user_openid: OPENID,
       user_name: user.nickName || '家人',
+      user_avatar: user.avatarUrl || '',
       items: items.map(i => ({
         dish_id: i.dish_id,
         dish_name: i.dish_name,

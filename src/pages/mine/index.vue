@@ -1,21 +1,51 @@
 <template>
   <view class="container">
-    <!-- 用户信息 -->
-    <view class="user-card">
+    <!-- 编辑模式 -->
+    <view v-if="isEditing" class="setup-card">
+      <view class="setup-title">{{ hasProfile ? '修改个人信息' : '完善个人信息' }}</view>
+
+      <button class="avatar-btn" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
+        <image v-if="avatarPath" :src="avatarPath" class="avatar-preview" />
+        <image v-else-if="hasProfile && userStore.userInfo?.avatarUrl" :src="userStore.userInfo.avatarUrl" class="avatar-preview" />
+        <view v-else class="avatar-empty">+</view>
+      </button>
+      <text class="setup-label">点击上方设置头像</text>
+
+      <input
+        class="nickname-input"
+        type="nickname"
+        v-model="editNickname"
+        :placeholder="editNickname || '点击获取微信昵称'"
+      />
+
+      <view class="setup-actions">
+        <button class="save-btn" :disabled="!canSave" @click="saveProfile">保存</button>
+        <text class="cancel-btn" @click="cancelEdit">取消</text>
+      </view>
+    </view>
+
+    <!-- 展示模式 -->
+    <view v-else class="user-card">
       <image v-if="userStore.userInfo?.avatarUrl" :src="userStore.userInfo.avatarUrl" class="avatar" />
-      <text class="nickname">{{ userStore.userInfo?.nickName || '家人' }}</text>
+      <view v-else class="avatar-placeholder" />
+      <text class="nickname">{{ userStore.userInfo?.nickName || '完善个人信息' }}</text>
+      <text class="edit-hint" @click.stop="openEdit">✎</text>
       <text v-if="userStore.isApprover" class="badge">审核人</text>
     </view>
 
     <!-- 功能入口 -->
     <view class="menu-list">
-      <view class="menu-item" @click="goToSubmit">
-        <text>➕ 提交新菜品</text>
+      <view v-if="userStore.isApprover" class="menu-item" @click="goToManageDishes">
+        <text>🍽️ 管理菜品</text>
+        <text class="badge-inline" v-if="pendingCount > 0">{{ pendingCount }}</text>
         <text class="arrow">›</text>
       </view>
-      <view v-if="userStore.isApprover" class="menu-item" @click="goToReview">
-        <text>✅ 审核菜品</text>
-        <text class="badge-inline" v-if="pendingCount > 0">{{ pendingCount }}</text>
+      <view v-if="userStore.isApprover" class="menu-item" @click="goToManageIngredients">
+        <text>🥬 管理食材</text>
+        <text class="arrow">›</text>
+      </view>
+      <view class="menu-item" @click="goToApprovers">
+        <text>👥 管理审核人</text>
         <text class="arrow">›</text>
       </view>
     </view>
@@ -40,12 +70,12 @@
       </view>
     </view>
 
-    <AppTabBar :current="2" />
+    <AppTabBar :current="3" />
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useDishManageStore } from '@/stores/dish-manage'
 import AppTabBar from '@/components/app-tab-bar/AppTabBar.vue'
@@ -54,6 +84,19 @@ const userStore = useUserStore()
 const dishStore = useDishManageStore()
 const myDishes = ref<any[]>([])
 const pendingCount = ref(0)
+
+// 设置/编辑表单
+const isEditing = ref(false)
+const avatarPath = ref('')       // 新选的头像临时路径
+const editNickname = ref('')
+
+const hasProfile = computed(() => {
+  return !!(userStore.userInfo?.nickName || userStore.userInfo?.avatarUrl)
+})
+
+const canSave = computed(() => {
+  return !!(avatarPath.value || editNickname.value.trim())
+})
 
 onMounted(async () => {
   try {
@@ -73,19 +116,117 @@ const statusText = (s: string) => {
 }
 
 const goToSubmit = () => uni.navigateTo({ url: '/pages/submit/index' })
-const goToReview = () => uni.navigateTo({ url: '/pages/manage/review/index' })
+const goToSubmitIngredient = () => uni.navigateTo({ url: '/pages/submit-ingredient/index' })
+const goToManageDishes = () => uni.navigateTo({ url: '/pages/manage/manage-dishes/index' })
+const goToManageIngredients = () => uni.navigateTo({ url: '/pages/manage/manage-ingredients/index' })
+const goToApprovers = () => uni.navigateTo({ url: '/pages/manage/approvers/index' })
 const editDish = (dish: any) => uni.navigateTo({ url: `/pages/submit/index?dishId=${dish._id}` })
+
+const openEdit = () => {
+  editNickname.value = userStore.userInfo?.nickName || ''
+  avatarPath.value = ''
+  isEditing.value = true
+}
+
+const cancelEdit = () => {
+  isEditing.value = false
+  avatarPath.value = ''
+  editNickname.value = ''
+}
+
+const onChooseAvatar = (e: any) => {
+  avatarPath.value = e.detail.avatarUrl
+}
+
+const saveProfile = async () => {
+  uni.showLoading({ title: '保存中...' })
+  try {
+    const data: any = {}
+
+    // 上传头像
+    if (avatarPath.value) {
+      const cloudPath = `avatars/${userStore.openid}_${Date.now()}.jpg`
+      const uploadRes = await wx.cloud.uploadFile({ cloudPath, filePath: avatarPath.value })
+      data.avatarUrl = uploadRes.fileID
+    }
+
+    // 昵称
+    if (editNickname.value.trim()) {
+      data.nickName = editNickname.value.trim()
+    }
+
+    const result = await wx.cloud.callFunction({
+      name: 'updateNickname',
+      data,
+    })
+    const res = result.result as any
+    if (res.code) {
+      uni.showToast({ title: res.message, icon: 'none' })
+      return
+    }
+
+    // 更新本地状态
+    const info: any = { ...userStore.userInfo }
+    if (data.avatarUrl) info.avatarUrl = data.avatarUrl
+    if (data.nickName) info.nickName = data.nickName
+    userStore.userInfo = info
+
+    isEditing.value = false
+    avatarPath.value = ''
+    editNickname.value = ''
+    uni.showToast({ title: '保存成功', icon: 'success' })
+  } catch (e: any) {
+    uni.showToast({ title: '保存失败，请重试', icon: 'none' })
+  } finally {
+    uni.hideLoading()
+  }
+}
 </script>
 
 <style scoped>
 .container { padding: 20rpx; padding-bottom: calc(120rpx + env(safe-area-inset-bottom)); }
+
+/* 已有资料的用户卡片 */
 .user-card {
   display: flex; align-items: center; gap: 16rpx;
   background: #fff; border-radius: 16rpx; padding: 30rpx; margin-bottom: 20rpx;
 }
 .avatar { width: 80rpx; height: 80rpx; border-radius: 50%; }
+.avatar-placeholder { width: 80rpx; height: 80rpx; border-radius: 50%; background: #e0e0e0; }
 .nickname { font-size: 32rpx; font-weight: bold; }
+.edit-hint { font-size: 26rpx; color: #bbb; padding: 8rpx; }
 .badge { background: #07C160; color: #fff; font-size: 22rpx; padding: 4rpx 16rpx; border-radius: 20rpx; }
+
+/* 设置/编辑卡片 */
+.setup-card {
+  background: #fff; border-radius: 16rpx; padding: 40rpx 30rpx;
+  margin-bottom: 20rpx; display: flex; flex-direction: column; align-items: center;
+}
+.setup-title { font-size: 32rpx; font-weight: bold; margin-bottom: 30rpx; }
+.avatar-btn {
+  width: 120rpx; height: 120rpx; border-radius: 50%;
+  padding: 0; margin: 0; border: none;
+  background: #f5f5f5; overflow: hidden;
+}
+.avatar-preview { width: 120rpx; height: 120rpx; border-radius: 50%; }
+.avatar-empty {
+  width: 120rpx; height: 120rpx; border-radius: 50%;
+  background: #f0f0f0; display: flex; align-items: center;
+  justify-content: center; font-size: 48rpx; color: #ccc;
+}
+.setup-label { font-size: 24rpx; color: #999; margin: 12rpx 0 24rpx; }
+.nickname-input {
+  width: 100%; height: 88rpx; border: 1px solid #e0e0e0; border-radius: 12rpx;
+  padding: 0 24rpx; font-size: 30rpx; text-align: center; margin-bottom: 24rpx;
+  box-sizing: border-box; line-height: 88rpx;
+}
+.setup-actions { width: 80%; display: flex; flex-direction: column; align-items: center; gap: 16rpx; }
+.save-btn {
+  width: 100%; background: #07C160; color: #fff; border: none;
+  padding: 20rpx; font-size: 30rpx;
+}
+.save-btn[disabled] { background: #c0c0c0; }
+.cancel-btn { font-size: 26rpx; color: #999; }
 
 .menu-list { background: #fff; border-radius: 16rpx; margin-bottom: 20rpx; overflow: hidden; }
 .menu-item {

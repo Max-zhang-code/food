@@ -7,6 +7,8 @@
 
     <view v-else>
       <view v-for="item in cartStore.items" :key="item.dish_id" class="cart-item">
+        <image v-if="item.dish_image" :src="item.dish_image" class="dish-img" mode="aspectFill" />
+        <view v-else class="dish-placeholder" />
         <view class="item-info">
           <view class="item-name">{{ item.dish_name }}</view>
         </view>
@@ -24,6 +26,8 @@
         </button>
       </view>
     </view>
+
+    <AppTabBar :current="1" />
   </view>
 </template>
 
@@ -31,6 +35,7 @@
 import { ref } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { useOrderStore } from '@/stores/order'
+import AppTabBar from '@/components/app-tab-bar/AppTabBar.vue'
 
 const cartStore = useCartStore()
 const orderStore = useOrderStore()
@@ -56,22 +61,25 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
-.container { padding: 20rpx; }
+.container { padding: 20rpx; padding-bottom: calc(140rpx + env(safe-area-inset-bottom)); }
 .empty { display: flex; flex-direction: column; align-items: center; padding: 200rpx 0; }
 .empty-icon { font-size: 80rpx; }
 .empty-text { font-size: 28rpx; color: #999; margin-top: 20rpx; }
 
 .cart-item {
-  display: flex; justify-content: space-between; align-items: center;
-  background: #fff; border-radius: 12rpx; padding: 24rpx; margin-bottom: 16rpx;
+  display: flex; align-items: center; gap: 16rpx;
+  background: #fff; border-radius: 12rpx; padding: 20rpx; margin-bottom: 16rpx;
 }
-.item-name { font-size: 30rpx; font-weight: bold; }
-.item-qty { display: flex; align-items: center; gap: 16rpx; }
-.qty { font-size: 32rpx; font-weight: bold; min-width: 40rpx; text-align: center; }
+.dish-img { width: 80rpx; height: 80rpx; border-radius: 8rpx; flex-shrink: 0; }
+.dish-placeholder { width: 80rpx; height: 80rpx; border-radius: 8rpx; background: #f0f0f0; flex-shrink: 0; }
+.item-info { flex: 1; min-width: 0; }
+.item-name { font-size: 28rpx; font-weight: bold; }
+.item-qty { display: flex; align-items: center; gap: 12rpx; flex-shrink: 0; }
+.qty { font-size: 28rpx; font-weight: bold; min-width: 36rpx; text-align: center; }
 
 .footer {
-  position: fixed; bottom: 0; left: 0; right: 0; background: #fff;
-  padding: 24rpx 40rpx; display: flex; justify-content: space-between; align-items: center;
+  position: fixed; bottom: calc(100rpx + env(safe-area-inset-bottom)); left: 0; right: 0;
+  background: #fff; padding: 24rpx 40rpx; display: flex; justify-content: space-between; align-items: center;
   box-shadow: 0 -2rpx 8rpx rgba(0,0,0,0.06);
 }
 .total { font-size: 30rpx; }

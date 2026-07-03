@@ -6,6 +6,7 @@ interface Ingredient {
   name: string
   category: string
   icon?: string
+  image?: string
 }
 
 interface Dish {

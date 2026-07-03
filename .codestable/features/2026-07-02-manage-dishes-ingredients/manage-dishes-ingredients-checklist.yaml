@@ -1,0 +1,68 @@
+steps:
+  - id: "step-1"
+    title: "云函数层"
+    description: "新建 updateDish, updateIngredient, getAllDishes, getAllIngredients 四个云函数，getAllDishes 返回全部菜品含提交人信息，其余含审核人校验"
+    exit_signal: "4 个云函数逻辑完整，getAllDishes 含 submitted_by_name，update 含 NOT_APPROVER"
+    verification: ["代码审查"]
+    deliverables:
+      - "cloudfunctions/updateDish/"
+      - "cloudfunctions/updateIngredient/"
+      - "cloudfunctions/getAllDishes/"
+      - "cloudfunctions/getAllIngredients/"
+    status: pending
+
+  - id: "step-2"
+    title: "管理列表页（含搜索+状态筛选+审核操作）"
+    description: "新建 manage-dishes/index.vue：搜索框+状态tabs(全部/待审核/已上架/已驳回)+卡片列表(待审核显示通过/驳回按钮，其他显示状态+编辑)。新建 manage-ingredients/index.vue：搜索框+卡片列表+编辑。pages.json 注册路由。卡片样式与首页菜品卡一致"
+    exit_signal: "npm run build 通过，搜索/筛选/卡片渲染正常"
+    verification: ["npm run build:mp-weixin", "手工验证"]
+    deliverables:
+      - "src/pages/manage/manage-dishes/index.vue"
+      - "src/pages/manage/manage-ingredients/index.vue"
+      - "src/pages.json"
+    status: pending
+
+  - id: "step-3"
+    title: "提交页编辑模式扩展"
+    description: "submit/index.vue: 审核人可编辑全部菜品(调 updateDish)；submit-ingredient/index.vue: 新增编辑模式(ingredientId 参数，调 updateIngredient)"
+    exit_signal: "编辑模式回填正常，dish 调 updateDish，ingredient 调 updateIngredient"
+    verification: ["npm run build:mp-weixin", "手工验证"]
+    deliverables:
+      - "src/pages/submit/index.vue"
+      - "src/pages/submit-ingredient/index.vue"
+    status: pending
+
+  - id: "step-4"
+    title: "mine 入口替换+联调"
+    description: "mine 页：移除「✅ 审核菜品」入口，新增「📋 管理菜品」「📋 管理食材」审核人入口。联调搜索→筛选→审核→编辑→新增完整流程"
+    exit_signal: "审核人入口正常，全流程可用"
+    verification: ["npm run build:mp-weixin", "手工验证"]
+    deliverables:
+      - "src/pages/mine/index.vue"
+    status: pending
+
+checks:
+  - id: "check-type"
+    title: "TypeScript 类型检查"
+    command: "npm run type-check"
+    status: pending
+
+  - id: "check-build"
+    title: "微信小程序编译"
+    command: "npm run build:mp-weixin"
+    status: pending
+
+  - id: "check-approver"
+    title: "非审核人拦截"
+    description: "确认非审核人不可见管理入口，直接调云函数返回 NOT_APPROVER"
+    status: pending
+
+  - id: "check-review-merge"
+    title: "审核操作确认弹窗"
+    description: "确认通过/驳回前弹出确认框，操作后卡片状态即时更新"
+    status: pending
+
+  - id: "check-search-filter"
+    title: "搜索+筛选联动"
+    description: "搜索关键词和状态筛选同时生效，切换 tab 重置搜索但保留 tab 状态"
+    status: pending

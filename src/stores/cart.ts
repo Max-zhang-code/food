@@ -4,12 +4,14 @@ import { ref, computed } from 'vue'
 interface CartItem {
   dish_id: string
   dish_name: string
+  dish_image?: string
   quantity: number
 }
 
 interface Dish {
   _id: string
   name: string
+  image?: string
 }
 
 export const useCartStore = defineStore('cart', () => {
@@ -22,7 +24,7 @@ export const useCartStore = defineStore('cart', () => {
     if (existing) {
       existing.quantity++
     } else {
-      items.value.push({ dish_id: dish._id, dish_name: dish.name, quantity: 1 })
+      items.value.push({ dish_id: dish._id, dish_name: dish.name, dish_image: dish.image, quantity: 1 })
     }
     uni.showToast({ title: `已加入：${dish.name}`, icon: 'none', duration: 1000 })
   }

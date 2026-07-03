@@ -40,22 +40,29 @@
           placeholder="搜索食材..."
         />
       </view>
-      <view v-if="filteredIngredients.length === 0" class="ing-empty">
-        {{ allIngredients.length === 0 ? '加载中...' : '未找到匹配食材' }}
+      <view v-if="allIngredients.length === 0" class="ing-empty">
+        加载中...
       </view>
-      <view v-else class="ingredient-select">
+      <view v-else-if="filteredIngredients.length === 0" class="ing-empty">
+        未找到匹配食材
+      </view>
+      <view v-else class="ingredient-grid">
         <view
           v-for="ing in filteredIngredients"
           :key="ing._id"
-          class="ing-tag"
+          class="ing-card"
           :class="{ selected: form.ingredient_ids.includes(ing._id) }"
           @click="toggleIng(ing._id)"
         >
-          {{ ing.name }}
+          <image v-if="ing.image" :src="ing.image" class="ing-img" mode="aspectFill" />
+          <text v-else-if="ing.icon" class="ing-emoji">{{ ing.icon }}</text>
+          <text v-else class="ing-placeholder">{{ ing.name[0] }}</text>
+          <text class="ing-name">{{ ing.name }}</text>
+          <view v-if="form.ingredient_ids.includes(ing._id)" class="ing-check">✓</view>
         </view>
       </view>
       <view v-if="form.ingredient_ids.length > 0" class="ing-count">
-        已选 {{ form.ingredient_ids.length }} 种食材
+        已选 {{ form.ingredient_ids.length }} 种食材：{{ selectedNames }}
       </view>
     </view>
 
@@ -67,17 +74,28 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
+import { onLoad } from '@dcloudio/uni-app'
 import { useDishManageStore } from '@/stores/dish-manage'
 import { useMenuStore } from '@/stores/menu'
+import { useUserStore } from '@/stores/user'
 
 const dishStore = useDishManageStore()
 const menuStore = useMenuStore()
+const userStore = useUserStore()
 const allIngredients = ref<any[]>([])
 const ingredientSearch = ref('')
 const submitting = ref(false)
+const compressedTempPath = ref('')
 
 const isEditing = ref(false)
 const editingId = ref('')
+
+onLoad((options: any) => {
+  if (options?.dishId) {
+    isEditing.value = true
+    editingId.value = options.dishId
+  }
+})
 
 const filteredIngredients = computed(() => {
   const keyword = ingredientSearch.value.trim().toLowerCase()
@@ -85,6 +103,13 @@ const filteredIngredients = computed(() => {
   return allIngredients.value.filter((ing: any) =>
     ing.name.toLowerCase().includes(keyword)
   )
+})
+
+const selectedNames = computed(() => {
+  return form.ingredient_ids
+    .map(id => allIngredients.value.find((i: any) => i._id === id)?.name)
+    .filter(Boolean)
+    .join('、')
 })
 
 const form = reactive({
@@ -98,6 +123,24 @@ const form = reactive({
 onMounted(async () => {
   await menuStore.fetchAllIngredients()
   allIngredients.value = menuStore.ingredients
+
+  // 编辑模式：加载菜品数据回填表单
+  if (isEditing.value) {
+    uni.showLoading({ title: '加载中...' })
+    try {
+      const db = wx.cloud.database()
+      const res = await db.collection('dishes').doc(editingId.value).get()
+      const dish = (res as any).data
+      if (dish) {
+        form.name = dish.name
+        form.description = dish.description || ''
+        form.cooking_time = dish.cooking_time || 15
+        form.image = dish.image || ''
+        form.ingredient_ids = dish.ingredient_ids || []
+      }
+    } catch (_) {}
+    finally { uni.hideLoading() }
+  }
 })
 
 const toggleIng = (id: string) => {
@@ -112,9 +155,8 @@ const chooseImage = () => {
     sizeType: ['compressed'],
     success: async (res) => {
       const tempPath = res.tempFilePaths[0]
-      uni.showLoading({ title: '压缩上传中...' })
+      uni.showLoading({ title: '处理图片...' })
       try {
-        // 第一步：前端压缩（质量 80%，肉眼几乎无差）
         const compressed = await new Promise<any>((resolve, reject) => {
           uni.compressImage({
             src: tempPath,
@@ -124,8 +166,7 @@ const chooseImage = () => {
           })
         })
 
-        // 第二步：上传到云存储
-        let uploadPath = compressed.tempFilePath
+        let finalPath = compressed.tempFilePath
 
         // 如果压缩后仍然过大（>500KB），二次降质
         if (compressed.size && compressed.size > 500 * 1024) {
@@ -134,18 +175,17 @@ const chooseImage = () => {
               src: compressed.tempFilePath,
               quality: 60,
               success: resolve,
-              fail: () => resolve(compressed), // 二次压缩失败用一次结果
+              fail: () => resolve(compressed),
             })
           })
-          uploadPath = recompressed.tempFilePath || compressed.tempFilePath
+          finalPath = recompressed.tempFilePath || compressed.tempFilePath
         }
 
-        const cloudPath = `dishes/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.jpg`
-        const uploadRes = await wx.cloud.uploadFile({ cloudPath, filePath: uploadPath })
-        form.image = uploadRes.fileID
+        // 只压缩不传——提交时才上传到云存储，避免弃用图片浪费空间
+        compressedTempPath.value = finalPath
+        form.image = finalPath
       } catch (e: any) {
-        uni.showToast({ title: '图片上传失败，请重试', icon: 'none' })
-        console.error('图片上传失败:', e.message)
+        uni.showToast({ title: '图片处理失败，请重试', icon: 'none' })
       } finally {
         uni.hideLoading()
       }
@@ -168,9 +208,27 @@ const handleSubmit = async () => {
     return
   }
   submitting.value = true
+  uni.showLoading({ title: '提交中...' })
   try {
+    // 有新选的图片，先上传到云存储
+    if (compressedTempPath.value) {
+      const cloudPath = `dishes/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.jpg`
+      const uploadRes = await wx.cloud.uploadFile({ cloudPath, filePath: compressedTempPath.value })
+      form.image = uploadRes.fileID
+    }
+
     if (isEditing.value) {
-      await dishStore.resubmitDish(editingId.value, { ...form })
+      // 审核人编辑任意菜品调 updateDish，非审核人调 resubmitDish
+      if (userStore.isApprover) {
+        const result = await wx.cloud.callFunction({
+          name: 'updateDish',
+          data: { dish_id: editingId.value, ...form },
+        })
+        const data = result.result as any
+        if (data.code) { uni.showToast({ title: data.message, icon: 'none' }); return }
+      } else {
+        await dishStore.resubmitDish(editingId.value, { ...form })
+      }
     } else {
       await dishStore.submitDish({ ...form })
     }
@@ -180,6 +238,7 @@ const handleSubmit = async () => {
     uni.showToast({ title: e.message || '提交失败', icon: 'none' })
   } finally {
     submitting.value = false
+    uni.hideLoading()
   }
 }
 </script>
@@ -193,18 +252,38 @@ const handleSubmit = async () => {
 .textarea { border: 1px solid #e0e0e0; border-radius: 12rpx; padding: 16rpx; font-size: 28rpx; height: 120rpx; }
 .upload-btn { font-size: 26rpx; color: #07C160; background: #f0faf4; border: none; }
 .preview-img { width: 200rpx; height: 200rpx; border-radius: 12rpx; margin-top: 12rpx; }
-.ingredient-select { display: flex; flex-wrap: wrap; gap: 16rpx; }
-.ing-tag {
-  padding: 12rpx 24rpx; background: #f0f0f0; border-radius: 32rpx; font-size: 26rpx;
-}
-.ing-tag.selected { background: #07C160; color: #fff; }
-.ing-search { margin-bottom: 16rpx; }
+.ingredient-search { margin-bottom: 16rpx; }
 .search-input {
   border: 1px solid #e0e0e0; border-radius: 12rpx; padding: 12rpx 20rpx;
   font-size: 26rpx; background: #fff;
 }
 .ing-empty { padding: 40rpx; text-align: center; color: #999; font-size: 26rpx; }
-.ing-count { margin-top: 16rpx; font-size: 24rpx; color: #07C160; text-align: right; }
+
+.ingredient-grid {
+  display: flex; flex-wrap: wrap; gap: 16rpx;
+}
+.ing-card {
+  width: calc(50% - 8rpx); position: relative;
+  background: #fff; border: 2rpx solid #eee; border-radius: 12rpx;
+  padding: 16rpx; box-sizing: border-box;
+  display: flex; flex-direction: column; align-items: center; gap: 8rpx;
+}
+.ing-card.selected { border-color: #07C160; background: #f0faf4; }
+.ing-img { width: 120rpx; height: 120rpx; border-radius: 8rpx; }
+.ing-emoji { font-size: 64rpx; line-height: 120rpx; }
+.ing-placeholder {
+  width: 120rpx; height: 120rpx; border-radius: 8rpx; background: #f0f0f0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48rpx; color: #999;
+}
+.ing-name { font-size: 24rpx; color: #333; text-align: center; }
+.ing-check {
+  position: absolute; top: 6rpx; right: 6rpx;
+  width: 36rpx; height: 36rpx; border-radius: 50%;
+  background: #07C160; color: #fff; font-size: 22rpx;
+  display: flex; align-items: center; justify-content: center;
+}
+.ing-count { margin-top: 16rpx; font-size: 24rpx; color: #07C160; }
 .submit-btn {
   background: #07C160; color: #fff; border: none;
   width: 100%; margin-top: 40rpx; padding: 24rpx;

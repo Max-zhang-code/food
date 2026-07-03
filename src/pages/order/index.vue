@@ -21,6 +21,8 @@
       <view v-if="activeOrders.length === 0" class="empty">暂无进行中订单</view>
       <view v-for="order in activeOrders" :key="order._id" class="order-card">
         <view class="order-header">
+          <image v-if="order.user_avatar" :src="order.user_avatar" class="order-avatar" />
+          <view v-else class="order-avatar-placeholder" />
           <text class="order-user">{{ order.user_name }}</text>
           <text class="order-time">{{ formatTime(order.created_at) }}</text>
         </view>
@@ -40,6 +42,8 @@
       <view v-if="historyOrders.length === 0" class="empty">暂无历史订单</view>
       <view v-for="order in historyOrders" :key="order._id" class="order-card done">
         <view class="order-header">
+          <image v-if="order.user_avatar" :src="order.user_avatar" class="order-avatar" />
+          <view v-else class="order-avatar-placeholder" />
           <text class="order-user">{{ order.user_name }}</text>
           <text class="order-time">{{ formatTime(order.completed_at || order.created_at) }}</text>
         </view>
@@ -50,12 +54,13 @@
       <view v-if="hasMore" class="load-more" @click="loadMore">加载更多</view>
     </view>
 
-    <AppTabBar :current="1" />
+    <AppTabBar :current="2" />
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import { useOrderStore } from '@/stores/order'
 import AppTabBar from '@/components/app-tab-bar/AppTabBar.vue'
 
@@ -107,7 +112,7 @@ const formatTime = (d: Date | string) => {
   return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`
 }
 
-onMounted(() => fetchActive())
+onShow(() => fetchActive())
 </script>
 
 <style scoped>
@@ -124,9 +129,11 @@ onMounted(() => fetchActive())
   margin: 16rpx 20rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
 }
 .order-card.done { opacity: 0.7; }
-.order-header { display: flex; justify-content: space-between; margin-bottom: 16rpx; }
+.order-header { display: flex; align-items: center; gap: 12rpx; margin-bottom: 16rpx; }
+.order-avatar { width: 48rpx; height: 48rpx; border-radius: 50%; flex-shrink: 0; }
+.order-avatar-placeholder { width: 48rpx; height: 48rpx; border-radius: 50%; background: #e0e0e0; flex-shrink: 0; }
 .order-user { font-weight: bold; font-size: 28rpx; }
-.order-time { font-size: 24rpx; color: #999; }
+.order-time { font-size: 24rpx; color: #999; margin-left: auto; flex-shrink: 0; }
 .order-item { font-size: 26rpx; color: #333; padding: 8rpx 0; }
 .order-footer { text-align: right; margin-top: 16rpx; }
 .complete-btn { background: #07C160; color: #fff; border: none; }

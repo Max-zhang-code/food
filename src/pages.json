@@ -19,6 +19,12 @@
       }
     },
     {
+      "path": "pages/submit-ingredient/index",
+      "style": {
+        "navigationBarTitleText": "提交食材"
+      }
+    },
+    {
       "path": "pages/order/index",
       "style": {
         "navigationBarTitleText": "订单"
@@ -40,6 +46,24 @@
           "style": {
             "navigationBarTitleText": "审核菜品"
           }
+        },
+        {
+          "path": "approvers/index",
+          "style": {
+            "navigationBarTitleText": "管理审核人"
+          }
+        },
+        {
+          "path": "manage-dishes/index",
+          "style": {
+            "navigationBarTitleText": "管理菜品"
+          }
+        },
+        {
+          "path": "manage-ingredients/index",
+          "style": {
+            "navigationBarTitleText": "管理食材"
+          }
         }
       ]
     }
@@ -54,6 +78,10 @@
       {
         "pagePath": "pages/index/index",
         "text": "点菜"
+      },
+      {
+        "pagePath": "pages/cart/index",
+        "text": "购物车"
       },
       {
         "pagePath": "pages/order/index",

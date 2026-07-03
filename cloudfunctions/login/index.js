@@ -7,32 +7,55 @@ exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
 
   try {
-    // 获取微信用户信息
+    // 查已有用户记录，存在则保留已有昵称头像
+    let existingUser = null
+    try {
+      const userDoc = await db.collection('users').doc(OPENID).get()
+      existingUser = userDoc.data
+    } catch (_) {}
+
     const userInfo = {
-      nickName: event.nickName || '家人',
-      avatarUrl: event.avatarUrl || '',
+      nickName: event.nickName || existingUser?.nickName || '',
+      avatarUrl: event.avatarUrl || existingUser?.avatarUrl || '',
     }
 
-    // upsert 用户信息到 users 集合
-    await db.collection('users').doc(OPENID).set({
-      data: {
-        openid: OPENID,
-        nickName: userInfo.nickName,
-        avatarUrl: userInfo.avatarUrl,
-        lastLoginAt: new Date(),
-      },
-    })
+    if (existingUser) {
+      // 老用户：只更新登录时间，保留已有资料
+      await db.collection('users').doc(OPENID).update({
+        data: { lastLoginAt: new Date() },
+      })
+    } else {
+      // 新用户：创建记录
+      await db.collection('users').doc(OPENID).set({
+        data: {
+          openid: OPENID,
+          nickName: userInfo.nickName,
+          avatarUrl: userInfo.avatarUrl,
+          lastLoginAt: new Date(),
+        },
+      })
+    }
 
-    // 检查是否为审核人
-    const approversDoc = await db.collection('settings').doc('approvers').get()
-    const approvers = approversDoc.data?.approvers || []
-    const isApprover = approvers.some(a => a.openid === OPENID)
+    // 检查是否为审核人（approvers 文档可能不存在）
+    let approvers = []
+    let isApprover = false
+    try {
+      const approversDoc = await db.collection('settings').doc('approvers').get()
+      approvers = approversDoc.data?.approvers || []
+      isApprover = approvers.some(a => a.openid === OPENID)
+    } catch (_) {
+      // 文档不存在，没有人是审核人
+    }
 
-    // 如果是审核人，同步更新头像昵称
-    if (isApprover) {
+    // 如果是审核人且本次登录有新资料，同步更新
+    if (isApprover && (event.nickName || event.avatarUrl)) {
       const updatedApprovers = approvers.map(a => {
         if (a.openid === OPENID) {
-          return { ...a, nickName: userInfo.nickName, avatarUrl: userInfo.avatarUrl }
+          return {
+            ...a,
+            ...(event.nickName ? { nickName: event.nickName } : {}),
+            ...(event.avatarUrl ? { avatarUrl: event.avatarUrl } : {}),
+          }
         }
         return a
       })

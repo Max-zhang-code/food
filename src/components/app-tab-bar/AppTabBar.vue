@@ -11,6 +11,12 @@
           <view class="menu-line" />
           <view class="menu-bowl" />
         </template>
+        <template v-else-if="item.icon === 'cart'">
+          <view class="cart-body">
+            <view class="cart-top" />
+            <view class="cart-handle" />
+          </view>
+        </template>
         <template v-else-if="item.icon === 'order'">
           <view class="order-body">
             <view class="order-line" />
@@ -124,6 +130,29 @@ const switchTab = (index: number) => {
 
 .order-line.short {
   width: 60%;
+}
+
+.cart-body {
+  width: 38rpx;
+  height: 34rpx;
+  border: 4rpx solid currentColor;
+  border-radius: 4rpx 4rpx 8rpx 8rpx;
+  position: relative;
+}
+.cart-top {
+  position: absolute; top: -10rpx; left: 50%;
+  transform: translateX(-50%);
+  width: 22rpx; height: 8rpx;
+  border: 4rpx solid currentColor;
+  border-bottom: none;
+  border-radius: 8rpx 8rpx 0 0;
+}
+.cart-handle {
+  position: absolute; top: -14rpx; left: 50%;
+  transform: translateX(-50%);
+  width: 12rpx; height: 4rpx;
+  background: currentColor;
+  border-radius: 2rpx;
 }
 
 .mine-head {

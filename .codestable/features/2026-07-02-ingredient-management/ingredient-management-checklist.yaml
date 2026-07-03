@@ -1,0 +1,58 @@
+steps:
+  - id: "step-1"
+    title: "数据层扩展"
+    description: "扩展前端 Ingredient 接口加 image 字段，menu store 返回类型更新，提交菜品页拉取食材时包含 image"
+    exit_signal: "type-check 通过，Ingredient 接口含 image?: string"
+    verification: ["npm run type-check"]
+    deliverables: ["src/stores/menu.ts", "src/pages/submit/index.vue(类型引用)"]
+    status: pending
+
+  - id: "step-2"
+    title: "云函数 submitIngredient"
+    description: "新建 cloudfunctions/submitIngredient，含重复名检测、必填校验。package.json 声明 wx-server-sdk 依赖"
+    exit_signal: "云函数逻辑完整，手动测试或代码审查确认重复名检测生效"
+    verification: ["代码审查"]
+    deliverables: ["cloudfunctions/submitIngredient/index.js", "cloudfunctions/submitIngredient/package.json"]
+    status: pending
+
+  - id: "step-3"
+    title: "提交食材页面 + 入口"
+    description: "新建 pages/submit-ingredient/index.vue：表单(名称+分类下拉+可选图片)。图片延迟上传模式。pages.json 注册路由。mine 页添加入口"
+    exit_signal: "npm run build 通过，页面可访问，提交流程正常"
+    verification: ["npm run build:mp-weixin", "手工验证"]
+    deliverables: ["src/pages/submit-ingredient/index.vue", "src/pages.json", "src/pages/mine/index.vue"]
+    status: pending
+
+  - id: "step-4"
+    title: "食材选择器重构"
+    description: "提交菜品页食材选择区从 tag 列表改为搜索框+2列卡片网格。卡片显示图片/emoji/首字降级。搜索实时过滤。底部已选食材名称行"
+    exit_signal: "npm run build 通过，搜索+卡片选择+图片降级全部正常"
+    verification: ["npm run build:mp-weixin", "手工验证"]
+    deliverables: ["src/pages/submit/index.vue"]
+    status: pending
+
+checks:
+  - id: "check-type"
+    title: "TypeScript 类型检查"
+    command: "npm run type-check"
+    status: pending
+
+  - id: "check-build"
+    title: "微信小程序编译"
+    command: "npm run build:mp-weixin"
+    status: pending
+
+  - id: "check-card-fallback"
+    title: "食材卡片降级展示"
+    description: "确认无 image 食材显示 emoji，无 emoji 显示首字占位"
+    status: pending
+
+  - id: "check-image-lazy"
+    title: "图片延迟上传"
+    description: "确认选择图片后不立刻上传，点提交时才上传"
+    status: pending
+
+  - id: "check-duplicate"
+    title: "重复食材名拦截"
+    description: "提交已存在食材名时返回错误提示"
+    status: pending
