@@ -6,6 +6,12 @@ interface CartItem {
   quantity: number
 }
 
+interface OrderUser {
+  openid: string
+  user_name: string
+  user_avatar: string
+}
+
 export const useOrderStore = defineStore('order', () => {
 
   const submitOrder = async (items: CartItem[]) => {
@@ -18,20 +24,20 @@ export const useOrderStore = defineStore('order', () => {
     return data.order
   }
 
-  const fetchActiveOrders = async () => {
+  const fetchActiveOrders = async (user_openid?: string) => {
     const res = await wx.cloud.callFunction({
       name: 'getOrders',
-      data: { status: 'active', page: 1, pageSize: 50 },
+      data: { status: 'active', page: 1, pageSize: 50, user_openid },
     })
     const data = res.result as any
     if (data.code) throw new Error(data.message)
     return data.orders || []
   }
 
-  const fetchHistoryOrders = async (page: number) => {
+  const fetchHistoryOrders = async (page: number, user_openid?: string) => {
     const res = await wx.cloud.callFunction({
       name: 'getOrders',
-      data: { status: 'completed', page, pageSize: 20 },
+      data: { status: ['completed', 'cancelled'], page, pageSize: 20, user_openid },
     })
     const data = res.result as any
     if (data.code) throw new Error(data.message)
@@ -48,5 +54,25 @@ export const useOrderStore = defineStore('order', () => {
     return data.order
   }
 
-  return { submitOrder, fetchActiveOrders, fetchHistoryOrders, completeOrder }
+  const cancelOrder = async (order_id: string) => {
+    const res = await wx.cloud.callFunction({
+      name: 'cancelOrder',
+      data: { order_id },
+    })
+    const data = res.result as any
+    if (data.code) throw new Error(data.message)
+    return data.order
+  }
+
+  const fetchOrderUsers = async (): Promise<OrderUser[]> => {
+    const res = await wx.cloud.callFunction({
+      name: 'getOrderUsers',
+      data: {},
+    })
+    const data = res.result as any
+    if (data.code) throw new Error(data.message)
+    return data.users || []
+  }
+
+  return { submitOrder, fetchActiveOrders, fetchHistoryOrders, completeOrder, cancelOrder, fetchOrderUsers }
 })

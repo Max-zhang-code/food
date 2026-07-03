@@ -1,0 +1,9 @@
+{
+  "name": "getOrderUsers",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  },
+  "description": "获取下过单的用户列表（去重），供订单页筛选栏使用"
+}

@@ -6,7 +6,7 @@ const _ = db.command
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
-  const { status = 'active', page = 1, pageSize = 20 } = event
+  const { status = 'active', page = 1, pageSize = 20, user_openid } = event
 
   try {
     if (!OPENID) {
@@ -15,12 +15,20 @@ exports.main = async (event, context) => {
 
     const skip = (page - 1) * pageSize
 
+    // 构建查询条件：status 支持单值或数组
+    const where = {
+      status: Array.isArray(status) ? _.in(status) : status,
+    }
+    if (user_openid) {
+      where.user_openid = user_openid
+    }
+
     const totalRes = await db.collection('orders')
-      .where({ status })
+      .where(where)
       .count()
 
     const res = await db.collection('orders')
-      .where({ status })
+      .where(where)
       .orderBy('created_at', 'desc')
       .skip(skip)
       .limit(pageSize)

@@ -1,0 +1,188 @@
+steps:
+  - id: "1"
+    desc: "cancelOrder 云函数：新建 cloudfunctions/cancelOrder/（index.js + package.json），实现软删除逻辑"
+    paradigm: "persistence"
+    status: "done"
+    exit_signal: "云函数测试面板跑通：正常取消 → success + status=cancelled；非本人取消 → NOT_OWNER；重复取消 → ALREADY_CANCELLED；不存在的订单 → ORDER_NOT_FOUND"
+    verify: "云函数本地调试 + 数据库验证"
+    deliverables:
+      - "cloudfunctions/cancelOrder/index.js"
+      - "cloudfunctions/cancelOrder/package.json"
+
+  - id: "2a"
+    desc: "getOrders 云函数扩展：status 参数支持数组（单值向后兼容）+ 新增可选 user_openid 参数"
+    paradigm: "persistence"
+    status: "done"
+    exit_signal: "getOrders 不传 user_openid 行为不变；传 status='active' 行为不变；传 status=['completed','cancelled'] 返回两种状态的订单；传 user_openid 只返回该用户订单"
+    verify: "云函数本地调试 + 对比新旧行为"
+    deliverables:
+      - "cloudfunctions/getOrders/index.js（修改）"
+
+  - id: "2b"
+    desc: "getOrderUsers 云函数新建：从 orders 去重提取下单用户列表（含 OPENID 校验）"
+    paradigm: "persistence"
+    status: "done"
+    exit_signal: "返回去重用户列表 [{ openid, user_name, user_avatar }]；未登录返回 NOT_LOGGED_IN"
+    verify: "云函数本地调试"
+    deliverables:
+      - "cloudfunctions/getOrderUsers/index.js"
+      - "cloudfunctions/getOrderUsers/package.json"
+
+  - id: "3"
+    desc: "order Store 扩展：新增 cancelOrder / fetchOrderUsers 方法；fetchActiveOrders / fetchHistoryOrders 签名增加可选 user_openid 参数"
+    paradigm: "orchestration"
+    status: "done"
+    exit_signal: "TypeScript 类型检查通过；方法签名与云函数接口一致"
+    verify: "代码 review + build 通过"
+    deliverables:
+      - "src/stores/order.ts（修改）"
+
+  - id: "4"
+    desc: "订单页 UI：筛选栏 + 取消按钮 + 确认弹窗 + cancelled 状态标记。覆盖正常态（全部/我的/某人切换、取消操作流程）"
+    paradigm: "ui"
+    status: "done"
+    exit_signal: "编译通过；筛选栏渲染正确（全部/我的 + 用户头像+名字）；取消按钮在本人 active/completed 卡片上可见、他人/cancelled 上不可见；确认弹窗正常弹出"
+    verify: "编译 + 肉眼验证页面渲染"
+    deliverables:
+      - "src/pages/order/index.vue（修改）"
+
+  - id: "5"
+    desc: "边界态收尾：空态（无订单/筛选无结果）、加载态、网络异常 toast、取消后列表刷新、筛选+分页重置、切换 tab 保留筛选、越权测试"
+    paradigm: "harden"
+    status: "done"
+    exit_signal: "全部边界态肉眼验证通过；build 无 warning；无 console.log/debug 残留；cancelOrder 云函数越权测试通过"
+    verify: "编译 + 肉眼验证全部边界态 + diff review"
+    deliverables: []
+
+checks:
+  - id: "scope-1"
+    desc: "无硬删除——代码中不存在 db.collection('orders').doc().remove()"
+    status: "pending"
+
+  - id: "scope-2"
+    desc: "无取消后恢复——cancelOrder 只写 status='cancelled'，无逆向云函数"
+    status: "pending"
+
+  - id: "scope-3"
+    desc: "无批量取消——前端无多选，cancelOrder 只接受单个 order_id"
+    status: "pending"
+
+  - id: "scope-4"
+    desc: "无订单编辑——无 updateOrder 云函数或类似能力"
+    status: "pending"
+
+  - id: "scope-5"
+    desc: "无按审核人角色筛选——筛选只用 user_openid，不读 isApprover"
+    status: "pending"
+
+  - id: "noun-1"
+    desc: "cancelOrder 云函数接口签名与 design 一致（输入 order_id / 输出 success+order / 含 NOT_OWNER 等 6 个错误码）"
+    status: "pending"
+
+  - id: "noun-2"
+    desc: "getOrders status 参数支持 string | string[]（单值向后兼容），user_openid 可选，不传时行为不变"
+    status: "pending"
+
+  - id: "noun-3"
+    desc: "getOrderUsers 返回 { users: [{ openid, user_name, user_avatar }] }"
+    status: "pending"
+
+  - id: "noun-4"
+    desc: "order Store 方法签名与 design 2.1 节一致"
+    status: "pending"
+
+  - id: "flow-1"
+    desc: "取消流程成功路径：本人订单可见取消按钮 → 点击 → 确认弹窗 → cancelOrder → 成功后 toast '已取消' + 刷新列表"
+    status: "pending"
+
+  - id: "flow-1b"
+    desc: "取消流程失败路径：云函数返回错误（NOT_OWNER/CANCEL_FAILED/网络异常）→ toast 显示错误信息 → 列表不刷新、订单状态不变"
+    status: "pending"
+
+  - id: "flow-2"
+    desc: "筛选流程：点击筛选用户 → getOrders(user_openid) → 列表刷新；切换回全部 → 不带参数重新请求"
+    status: "pending"
+
+  - id: "flow-3"
+    desc: "筛选 + 分页：切换筛选条件时重置 page=1 + 清空列表"
+    status: "pending"
+
+  - id: "flow-4"
+    desc: "筛选 + tab 切换：筛选状态为页面级（两个 tab 共享），切换 tab 时保留当前选中用户并自动重新请求"
+    status: "pending"
+
+  - id: "mount-1"
+    desc: "cloudfunctions/cancelOrder/ 已创建并包含 index.js + package.json"
+    status: "pending"
+
+  - id: "mount-2"
+    desc: "cloudfunctions/getOrderUsers/ 已创建并包含 index.js + package.json"
+    status: "pending"
+
+  - id: "mount-3"
+    desc: "cloudfunctions/getOrders/index.js 已修改（新增 user_openid 参数）"
+    status: "pending"
+
+  - id: "mount-4"
+    desc: "src/stores/order.ts 已修改（新增 cancelOrder + fetchOrderUsers + 参数扩展）"
+    status: "pending"
+
+  - id: "mount-5"
+    desc: "src/pages/order/index.vue 已修改（筛选栏 + 取消按钮 + 弹窗 + cancelled 标记）"
+    status: "pending"
+
+  - id: "accept-0"
+    desc: "S1-pre 他人订单不显示取消按钮（仅 user_openid 匹配的订单显示）"
+    status: "pending"
+
+  - id: "accept-1"
+    desc: "S1 取消进行中订单 → 移到历史，状态 cancelled"
+    status: "pending"
+
+  - id: "accept-2"
+    desc: "S2 取消已完成订单 → 状态变 cancelled，显示已取消标记"
+    status: "pending"
+
+  - id: "accept-3"
+    desc: "S3 筛选「我的」→ 只显示当前用户的订单"
+    status: "pending"
+
+  - id: "accept-4"
+    desc: "S4 筛选某个家人 → 只显示该家人的订单"
+    status: "pending"
+
+  - id: "accept-5"
+    desc: "S5 筛选 + tab 切换保留筛选条件"
+    status: "pending"
+
+  - id: "accept-6"
+    desc: "S6 取消后列表自动刷新"
+    status: "pending"
+
+  - id: "accept-7"
+    desc: "S7 已取消订单无取消按钮（前端拦截）"
+    status: "pending"
+
+  - id: "accept-8"
+    desc: "S8 筛选无结果时空态展示正确"
+    status: "pending"
+
+  - id: "accept-9"
+    desc: "S9 只有一个用户时筛选栏显示正确（全部+我的+1人）"
+    status: "pending"
+
+  - id: "accept-10"
+    desc: "S10 取消确认弹窗点取消 → 不执行操作"
+    status: "pending"
+
+  - id: "accept-11"
+    desc: "S11 筛选后切回全部 → 显示全部订单"
+    status: "pending"
+
+  - id: "accept-12"
+    desc: "S12 网络异常时 toast 提示"
+    status: "pending"
+
+  - id: "accept-13"
+    desc: "S13-S15 越权/缺参数错误码正确返回"
+    status: "pending"
