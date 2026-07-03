@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <view class="container">
     <!-- 搜索 + 筛选 -->
     <view class="search-bar">
@@ -89,7 +89,7 @@ const handleReview = (dishId: string, action: 'approve' | 'reject') => {
   uni.showModal({
     title: `确认${label}`,
     content: `确定${label}该菜品？`,
-    confirmColor: action === 'reject' ? '#ff4757' : '#07C160',
+    confirmColor: action === 'reject' ? '#ff4757' : '#FF6B4A',
     success: async (res) => {
       if (!res.confirm) return
       try {
@@ -114,33 +114,33 @@ const handleReview = (dishId: string, action: 'approve' | 'reject') => {
 .container { padding: 20rpx; }
 
 .search-bar { margin-bottom: 16rpx; }
-.search-input { border: 1px solid #e0e0e0; border-radius: 12rpx; padding: 16rpx 24rpx; font-size: 28rpx; background: #fff; }
+.search-input { border: 1px solid #e0e0e0; border-radius: 20rpx; padding: 16rpx 24rpx; font-size: 28rpx; background: #fff; }
 
 .tab-bar { white-space: nowrap; margin-bottom: 16rpx; display: flex; gap: 12rpx; }
 .tab {
   display: inline-block; padding: 12rpx 24rpx; font-size: 26rpx; color: #666;
   background: #f5f5f5; border-radius: 32rpx; flex-shrink: 0;
 }
-.tab.active { background: #07C160; color: #fff; }
+.tab.active { background: #FF6B4A; color: #fff; }
 
-.add-btn { width: 100%; background: #07C160; color: #fff; border: none; margin-bottom: 16rpx; padding: 18rpx; font-size: 28rpx; }
+.add-btn { width: 100%; background: #FF6B4A; color: #fff; border: none; margin-bottom: 16rpx; padding: 18rpx; font-size: 28rpx; }
 
 .dish-list { display: flex; flex-direction: column; gap: 16rpx; }
 .dish-card {
   display: flex; align-items: center; gap: 16rpx;
   background: #fff; border-radius: 16rpx; padding: 20rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
 }
-.dish-img { width: 100rpx; height: 100rpx; border-radius: 12rpx; flex-shrink: 0; }
+.dish-img { width: 100rpx; height: 100rpx; border-radius: 20rpx; flex-shrink: 0; }
 .dish-info { flex: 1; min-width: 0; }
 .dish-name { font-size: 28rpx; font-weight: bold; }
 .dish-meta { font-size: 22rpx; color: #999; display: flex; flex-direction: column; gap: 4rpx; margin-top: 6rpx; }
 .status-tag { font-size: 22rpx; padding: 2rpx 12rpx; border-radius: 16rpx; display: inline-block; width: fit-content; }
 .st-pending { background: #fff3e0; color: #f0a040; }
-.st-approved { background: #e8f5e9; color: #07C160; }
+.st-approved { background: #fff0ed; color: #FF6B4A; }
 .st-rejected { background: #ffebee; color: #ff4757; }
 
 .dish-actions { display: flex; flex-direction: column; gap: 10rpx; flex-shrink: 0; }
-.approve-btn { background: #07C160; color: #fff; border: none; }
+.approve-btn { background: #FF6B4A; color: #fff; border: none; }
 .reject-btn { background: #f5f5f5; color: #ff4757; border: none; }
 .edit-btn { background: #f0f0f0; color: #333; border: none; }
 

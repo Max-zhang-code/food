@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <view class="container">
     <view v-if="cartStore.items.length === 0" class="empty">
       <text class="empty-icon">🛒</text>
@@ -68,10 +68,10 @@ const handleSubmit = async () => {
 
 .cart-item {
   display: flex; align-items: center; gap: 16rpx;
-  background: #fff; border-radius: 12rpx; padding: 20rpx; margin-bottom: 16rpx;
+  background: #fff; border-radius: 20rpx; padding: 20rpx; margin-bottom: 16rpx;
 }
-.dish-img { width: 80rpx; height: 80rpx; border-radius: 8rpx; flex-shrink: 0; }
-.dish-placeholder { width: 80rpx; height: 80rpx; border-radius: 8rpx; background: #f0f0f0; flex-shrink: 0; }
+.dish-img { width: 80rpx; height: 80rpx; border-radius: 16rpx; flex-shrink: 0; }
+.dish-placeholder { width: 80rpx; height: 80rpx; border-radius: 16rpx; background: #f0f0f0; flex-shrink: 0; }
 .item-info { flex: 1; min-width: 0; }
 .item-name { font-size: 28rpx; font-weight: bold; }
 .item-qty { display: flex; align-items: center; gap: 12rpx; flex-shrink: 0; }
@@ -83,5 +83,5 @@ const handleSubmit = async () => {
   box-shadow: 0 -2rpx 8rpx rgba(0,0,0,0.06);
 }
 .total { font-size: 30rpx; }
-.submit-btn { background: #07C160; color: #fff; border: none; padding: 12rpx 40rpx; }
+.submit-btn { background: #FF6B4A; color: #fff; border: none; padding: 12rpx 40rpx; }
 </style>

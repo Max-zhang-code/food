@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <view class="container">
     <!-- 编辑模式 -->
     <view v-if="isEditing" class="setup-card">
@@ -195,7 +195,7 @@ const saveProfile = async () => {
 .avatar-placeholder { width: 80rpx; height: 80rpx; border-radius: 50%; background: #e0e0e0; }
 .nickname { font-size: 32rpx; font-weight: bold; }
 .edit-hint { font-size: 26rpx; color: #bbb; padding: 8rpx; }
-.badge { background: #07C160; color: #fff; font-size: 22rpx; padding: 4rpx 16rpx; border-radius: 20rpx; }
+.badge { background: #FF6B4A; color: #fff; font-size: 22rpx; padding: 4rpx 16rpx; border-radius: 20rpx; }
 
 /* 设置/编辑卡片 */
 .setup-card {
@@ -216,13 +216,13 @@ const saveProfile = async () => {
 }
 .setup-label { font-size: 24rpx; color: #999; margin: 12rpx 0 24rpx; }
 .nickname-input {
-  width: 100%; height: 88rpx; border: 1px solid #e0e0e0; border-radius: 12rpx;
+  width: 100%; height: 88rpx; border: 1px solid #e0e0e0; border-radius: 20rpx;
   padding: 0 24rpx; font-size: 30rpx; text-align: center; margin-bottom: 24rpx;
   box-sizing: border-box; line-height: 88rpx;
 }
 .setup-actions { width: 80%; display: flex; flex-direction: column; align-items: center; gap: 16rpx; }
 .save-btn {
-  width: 100%; background: #07C160; color: #fff; border: none;
+  width: 100%; background: #FF6B4A; color: #fff; border: none;
   padding: 20rpx; font-size: 30rpx;
 }
 .save-btn[disabled] { background: #c0c0c0; }
@@ -248,7 +248,7 @@ const saveProfile = async () => {
 .dish-name { font-size: 28rpx; }
 .dish-status { font-size: 24rpx; margin-left: 16rpx; }
 .status-pending { color: #f0a040; }
-.status-approved { color: #07C160; }
+.status-approved { color: #FF6B4A; }
 .status-rejected { color: #ff4757; }
 .edit-btn { background: #f0f0f0; color: #333; border: none; }
 

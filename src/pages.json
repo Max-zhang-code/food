@@ -1,4 +1,4 @@
-{
+﻿{
   "pages": [
     {
       "path": "pages/index/index",
@@ -71,7 +71,7 @@
   "tabBar": {
     "custom": true,
     "color": "#999999",
-    "selectedColor": "#07C160",
+    "selectedColor": "#FF6B4A",
     "borderStyle": "black",
     "backgroundColor": "#FFFFFF",
     "list": [

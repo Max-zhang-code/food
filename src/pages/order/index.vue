@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <view class="container">
     <!-- 内部 tab 切换 -->
     <view class="tabs">
@@ -249,7 +249,7 @@ onShow(() => {
   flex: 1; text-align: center; padding: 24rpx; font-size: 28rpx; color: #666;
   border-bottom: 4rpx solid transparent; transition: all 0.2s;
 }
-.tab.active { color: #07C160; border-bottom-color: #07C160; font-weight: bold; }
+.tab.active { color: #FF6B4A; border-bottom-color: #FF6B4A; font-weight: bold; }
 
 /* 筛选栏 */
 .filter-bar { background: #fff; padding: 16rpx 0; border-bottom: 1px solid #f0f0f0; }
@@ -260,11 +260,11 @@ onShow(() => {
   padding: 10rpx 24rpx; border-radius: 32rpx; font-size: 26rpx; color: #666;
   background: #f5f5f5; white-space: nowrap; flex-shrink: 0;
 }
-.filter-chip.active { background: #07C160; color: #fff; }
+.filter-chip.active { background: #FF6B4A; color: #fff; }
 .filter-avatar { width: 36rpx; height: 36rpx; border-radius: 50%; }
 
 .order-card {
-  background: #fff; border-radius: 12rpx; padding: 24rpx;
+  background: #fff; border-radius: 20rpx; padding: 24rpx;
   margin: 16rpx 20rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
 }
 .order-card.revoked { opacity: 0.5; }
@@ -276,11 +276,11 @@ onShow(() => {
 .order-item { font-size: 26rpx; color: #333; padding: 8rpx 0; }
 .order-footer { display: flex; align-items: center; gap: 16rpx; margin-top: 16rpx; }
 .footer-actions { margin-left: auto; display: flex; align-items: center; gap: 16rpx; }
-.complete-btn { background: #07C160; color: #fff; border: none; }
+.complete-btn { background: #FF6B4A; color: #fff; border: none; }
 .revoke-btn { background: #fff; color: #fa5151; border: 1px solid #fa5151; }
 .revoked-tag { font-size: 24rpx; color: #999; }
 .delete-btn { background: #fa5151; color: #fff; border: none; }
 
-.load-more { text-align: center; padding: 20rpx; color: #07C160; font-size: 26rpx; }
+.load-more { text-align: center; padding: 20rpx; color: #FF6B4A; font-size: 26rpx; }
 .loading, .empty { text-align: center; padding: 80rpx; color: #999; font-size: 28rpx; }
 </style>

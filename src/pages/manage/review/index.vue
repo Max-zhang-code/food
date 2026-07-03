@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <view class="container">
     <view v-if="loading" class="loading">加载中...</view>
 
@@ -83,15 +83,15 @@ const handleReject = async (id: string) => {
   background: #fff; border-radius: 16rpx; padding: 24rpx;
   margin-bottom: 20rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
 }
-.dish-img { width: 100%; height: 300rpx; border-radius: 12rpx; }
+.dish-img { width: 100%; height: 300rpx; border-radius: 20rpx; }
 .dish-info { margin-top: 20rpx; }
 .dish-name { font-size: 32rpx; font-weight: bold; }
 .dish-desc { font-size: 26rpx; color: #666; margin: 8rpx 0; }
 .dish-meta { font-size: 24rpx; color: #999; display: flex; gap: 20rpx; }
 .ingredients { display: flex; flex-wrap: wrap; gap: 12rpx; margin-top: 16rpx; }
-.ing-tag { font-size: 24rpx; background: #f0faf4; color: #07C160; padding: 6rpx 16rpx; border-radius: 16rpx; }
+.ing-tag { font-size: 24rpx; background: #fff5f2; color: #FF6B4A; padding: 6rpx 16rpx; border-radius: 16rpx; }
 .actions { display: flex; justify-content: flex-end; gap: 20rpx; margin-top: 24rpx; }
-.approve-btn { background: #07C160; color: #fff; border: none; }
+.approve-btn { background: #FF6B4A; color: #fff; border: none; }
 .reject-btn { background: #f5f5f5; color: #ff4757; border: none; }
 .loading, .empty { text-align: center; padding: 120rpx 0; color: #999; }
 .empty-icon { font-size: 80rpx; display: block; margin-bottom: 20rpx; }

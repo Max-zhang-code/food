@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <view class="container">
     <view class="form-title">{{ isEditing ? '编辑菜品' : '提交新菜品' }}</view>
 
@@ -248,13 +248,13 @@ const handleSubmit = async () => {
 .form-title { font-size: 36rpx; font-weight: bold; margin-bottom: 30rpx; }
 .form-item { margin-bottom: 30rpx; }
 .label { font-size: 28rpx; color: #333; display: block; margin-bottom: 12rpx; }
-.input { border: 1px solid #e0e0e0; border-radius: 12rpx; padding: 16rpx; font-size: 28rpx; }
-.textarea { border: 1px solid #e0e0e0; border-radius: 12rpx; padding: 16rpx; font-size: 28rpx; height: 120rpx; }
-.upload-btn { font-size: 26rpx; color: #07C160; background: #f0faf4; border: none; }
-.preview-img { width: 200rpx; height: 200rpx; border-radius: 12rpx; margin-top: 12rpx; }
+.input { border: 1px solid #e0e0e0; border-radius: 20rpx; padding: 16rpx; font-size: 28rpx; }
+.textarea { border: 1px solid #e0e0e0; border-radius: 20rpx; padding: 16rpx; font-size: 28rpx; height: 120rpx; }
+.upload-btn { font-size: 26rpx; color: #FF6B4A; background: #fff5f2; border: none; }
+.preview-img { width: 200rpx; height: 200rpx; border-radius: 20rpx; margin-top: 12rpx; }
 .ingredient-search { margin-bottom: 16rpx; }
 .search-input {
-  border: 1px solid #e0e0e0; border-radius: 12rpx; padding: 12rpx 20rpx;
+  border: 1px solid #e0e0e0; border-radius: 20rpx; padding: 12rpx 20rpx;
   font-size: 26rpx; background: #fff;
 }
 .ing-empty { padding: 40rpx; text-align: center; color: #999; font-size: 26rpx; }
@@ -264,15 +264,15 @@ const handleSubmit = async () => {
 }
 .ing-card {
   width: calc(50% - 8rpx); position: relative;
-  background: #fff; border: 2rpx solid #eee; border-radius: 12rpx;
+  background: #fff; border: 2rpx solid #eee; border-radius: 20rpx;
   padding: 16rpx; box-sizing: border-box;
   display: flex; flex-direction: column; align-items: center; gap: 8rpx;
 }
-.ing-card.selected { border-color: #07C160; background: #f0faf4; }
-.ing-img { width: 120rpx; height: 120rpx; border-radius: 8rpx; }
+.ing-card.selected { border-color: #FF6B4A; background: #fff5f2; }
+.ing-img { width: 120rpx; height: 120rpx; border-radius: 16rpx; }
 .ing-emoji { font-size: 64rpx; line-height: 120rpx; }
 .ing-placeholder {
-  width: 120rpx; height: 120rpx; border-radius: 8rpx; background: #f0f0f0;
+  width: 120rpx; height: 120rpx; border-radius: 16rpx; background: #f0f0f0;
   display: flex; align-items: center; justify-content: center;
   font-size: 48rpx; color: #999;
 }
@@ -280,12 +280,12 @@ const handleSubmit = async () => {
 .ing-check {
   position: absolute; top: 6rpx; right: 6rpx;
   width: 36rpx; height: 36rpx; border-radius: 50%;
-  background: #07C160; color: #fff; font-size: 22rpx;
+  background: #FF6B4A; color: #fff; font-size: 22rpx;
   display: flex; align-items: center; justify-content: center;
 }
-.ing-count { margin-top: 16rpx; font-size: 24rpx; color: #07C160; }
+.ing-count { margin-top: 16rpx; font-size: 24rpx; color: #FF6B4A; }
 .submit-btn {
-  background: #07C160; color: #fff; border: none;
+  background: #FF6B4A; color: #fff; border: none;
   width: 100%; margin-top: 40rpx; padding: 24rpx;
 }
 </style>

@@ -6,29 +6,7 @@
       class="tab-bar-item"
       @tap="switchTab(index)"
     >
-      <view class="tab-icon" :class="{ active: current === index }">
-        <template v-if="item.icon === 'menu'">
-          <view class="menu-line" />
-          <view class="menu-bowl" />
-        </template>
-        <template v-else-if="item.icon === 'cart'">
-          <view class="cart-body">
-            <view class="cart-top" />
-            <view class="cart-handle" />
-          </view>
-        </template>
-        <template v-else-if="item.icon === 'order'">
-          <view class="order-body">
-            <view class="order-line" />
-            <view class="order-line" />
-            <view class="order-line short" />
-          </view>
-        </template>
-        <template v-else>
-          <view class="mine-head" />
-          <view class="mine-body" />
-        </template>
-      </view>
+      <text class="tab-emoji">{{ item.emoji }}</text>
       <text class="tab-text" :class="{ active: current === index }">{{ item.text }}</text>
     </view>
   </view>
@@ -67,107 +45,20 @@ const switchTab = (index: number) => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6rpx;
+  gap: 4rpx;
 }
 
-.tab-icon {
-  width: 48rpx;
-  height: 48rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #999;
-}
-
-.tab-icon.active {
-  color: #07c160;
+.tab-emoji {
+  font-size: 40rpx;
+  line-height: 1;
 }
 
 .tab-text {
   font-size: 22rpx;
   color: #999;
-  line-height: 1;
 }
 
 .tab-text.active {
-  color: #07c160;
-}
-
-.menu-line {
-  width: 36rpx;
-  height: 4rpx;
-  border-radius: 2rpx;
-  background: currentColor;
-  margin-bottom: 4rpx;
-}
-
-.menu-bowl {
-  width: 32rpx;
-  height: 22rpx;
-  border: 4rpx solid currentColor;
-  border-top: none;
-  border-radius: 0 0 16rpx 16rpx;
-}
-
-.order-body {
-  width: 30rpx;
-  height: 38rpx;
-  border: 4rpx solid currentColor;
-  border-radius: 6rpx;
-  padding: 8rpx 6rpx;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.order-line {
-  height: 4rpx;
-  border-radius: 2rpx;
-  background: currentColor;
-}
-
-.order-line.short {
-  width: 60%;
-}
-
-.cart-body {
-  width: 38rpx;
-  height: 34rpx;
-  border: 4rpx solid currentColor;
-  border-radius: 4rpx 4rpx 8rpx 8rpx;
-  position: relative;
-}
-.cart-top {
-  position: absolute; top: -10rpx; left: 50%;
-  transform: translateX(-50%);
-  width: 22rpx; height: 8rpx;
-  border: 4rpx solid currentColor;
-  border-bottom: none;
-  border-radius: 8rpx 8rpx 0 0;
-}
-.cart-handle {
-  position: absolute; top: -14rpx; left: 50%;
-  transform: translateX(-50%);
-  width: 12rpx; height: 4rpx;
-  background: currentColor;
-  border-radius: 2rpx;
-}
-
-.mine-head {
-  width: 16rpx;
-  height: 16rpx;
-  border: 4rpx solid currentColor;
-  border-radius: 50%;
-  margin-bottom: 2rpx;
-}
-
-.mine-body {
-  width: 30rpx;
-  height: 14rpx;
-  border: 4rpx solid currentColor;
-  border-bottom: none;
-  border-radius: 16rpx 16rpx 0 0;
+  color: #FF6B4A;
 }
 </style>

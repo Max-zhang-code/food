@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <view class="container">
     <!-- 食材选择区 -->
     <view class="ingredient-section">
@@ -89,29 +89,29 @@ const goToCart = () => {
   padding: 12rpx 24rpx; background: #f0f0f0; border-radius: 32rpx;
   font-size: 26rpx; transition: all 0.2s;
 }
-.tag.active { background: #07C160; color: #fff; }
+.tag.active { background: #FF6B4A; color: #fff; }
 
 .dish-list { display: flex; flex-direction: column; gap: 20rpx; }
 .dish-card {
   display: flex; align-items: center; background: #fff;
   border-radius: 16rpx; padding: 20rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
 }
-.dish-img { width: 120rpx; height: 120rpx; border-radius: 12rpx; flex-shrink: 0; }
+.dish-img { width: 120rpx; height: 120rpx; border-radius: 20rpx; flex-shrink: 0; }
 .dish-info { flex: 1; margin-left: 20rpx; }
 .dish-name { font-size: 30rpx; font-weight: bold; }
 .dish-desc { font-size: 24rpx; color: #666; margin: 8rpx 0; }
 .dish-meta { font-size: 22rpx; color: #999; display: flex; gap: 20rpx; }
-.add-btn { flex-shrink: 0; margin-left: 16rpx; background: #07C160; color: #fff; border: none; }
+.add-btn { flex-shrink: 0; margin-left: 16rpx; background: #FF6B4A; color: #fff; border: none; }
 
 .cart-bar {
   position: fixed;
   bottom: calc(100rpx + env(safe-area-inset-bottom));
   left: 0; right: 0;
-  background: #07C160; color: #fff; padding: 24rpx 40rpx;
+  background: #FF6B4A; color: #fff; padding: 24rpx 40rpx;
   display: flex; align-items: center; gap: 20rpx; z-index: 100;
 }
 .cart-count {
-  background: #fff; color: #07C160; width: 44rpx; height: 44rpx;
+  background: #fff; color: #FF6B4A; width: 44rpx; height: 44rpx;
   border-radius: 50%; text-align: center; line-height: 44rpx; font-weight: bold; font-size: 24rpx;
 }
 

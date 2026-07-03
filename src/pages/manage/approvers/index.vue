@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <view class="container">
     <view class="section-title">
       审核人列表
@@ -182,9 +182,9 @@ const handleRemove = (item: Approver, index: number) => {
 .user-list { display: flex; flex-direction: column; gap: 12rpx; }
 .user-item {
   display: flex; align-items: center; gap: 16rpx;
-  background: #fff; border-radius: 12rpx; padding: 20rpx 24rpx;
+  background: #fff; border-radius: 20rpx; padding: 20rpx 24rpx;
 }
-.add-btn { background: #07C160; color: #fff; border: none; }
+.add-btn { background: #FF6B4A; color: #fff; border: none; }
 .added-btn { background: #f5f5f5; color: #999; border: none; }
 
 .loading { text-align: center; padding: 80rpx; color: #999; }

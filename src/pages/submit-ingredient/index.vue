@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <view class="container">
     <view class="form-title">{{ isEditing ? '编辑食材' : '提交新食材' }}</view>
 
@@ -182,9 +182,9 @@ const handleSubmit = async () => {
 .form-title { font-size: 36rpx; font-weight: bold; margin-bottom: 30rpx; }
 .form-item { margin-bottom: 30rpx; }
 .label { font-size: 28rpx; color: #333; display: block; margin-bottom: 12rpx; }
-.input { border: 1px solid #e0e0e0; border-radius: 12rpx; padding: 16rpx; font-size: 28rpx; }
+.input { border: 1px solid #e0e0e0; border-radius: 20rpx; padding: 16rpx; font-size: 28rpx; }
 .picker-display {
-  border: 1px solid #e0e0e0; border-radius: 12rpx; padding: 16rpx;
+  border: 1px solid #e0e0e0; border-radius: 20rpx; padding: 16rpx;
   font-size: 28rpx; display: flex; justify-content: space-between; align-items: center;
 }
 .picker-display .arrow { font-size: 32rpx; color: #ccc; }
@@ -193,13 +193,13 @@ const handleSubmit = async () => {
 .emoji-grid { display: flex; flex-wrap: wrap; gap: 12rpx; }
 .emoji-item {
   width: calc(20% - 10rpx); text-align: center; font-size: 44rpx;
-  padding: 12rpx 0; border-radius: 12rpx; background: #f5f5f5;
+  padding: 12rpx 0; border-radius: 20rpx; background: #f5f5f5;
 }
-.emoji-item.active { background: #07C160; }
-.upload-btn { font-size: 26rpx; color: #07C160; background: #f0faf4; border: none; }
-.preview-img { width: 200rpx; height: 200rpx; border-radius: 12rpx; margin-top: 12rpx; }
+.emoji-item.active { background: #FF6B4A; }
+.upload-btn { font-size: 26rpx; color: #FF6B4A; background: #fff5f2; border: none; }
+.preview-img { width: 200rpx; height: 200rpx; border-radius: 20rpx; margin-top: 12rpx; }
 .submit-btn {
-  background: #07C160; color: #fff; border: none;
+  background: #FF6B4A; color: #fff; border: none;
   width: 100%; margin-top: 40rpx; padding: 24rpx;
 }
 </style>

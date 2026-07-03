@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <view class="container">
     <view class="search-bar">
       <input v-model="search" class="search-input" placeholder="搜索食材..." />
@@ -71,16 +71,16 @@ const goToEdit = (id: string) => uni.navigateTo({ url: `/pages/submit-ingredient
 .container { padding: 20rpx; }
 
 .search-bar { margin-bottom: 16rpx; }
-.search-input { border: 1px solid #e0e0e0; border-radius: 12rpx; padding: 16rpx 24rpx; font-size: 28rpx; background: #fff; }
+.search-input { border: 1px solid #e0e0e0; border-radius: 20rpx; padding: 16rpx 24rpx; font-size: 28rpx; background: #fff; }
 
 .tab-bar { white-space: nowrap; margin-bottom: 16rpx; display: flex; gap: 12rpx; }
 .tab {
   display: inline-block; padding: 12rpx 24rpx; font-size: 26rpx; color: #666;
   background: #f5f5f5; border-radius: 32rpx; flex-shrink: 0;
 }
-.tab.active { background: #07C160; color: #fff; }
+.tab.active { background: #FF6B4A; color: #fff; }
 
-.add-btn { width: 100%; background: #07C160; color: #fff; border: none; margin-bottom: 16rpx; padding: 18rpx; font-size: 28rpx; }
+.add-btn { width: 100%; background: #FF6B4A; color: #fff; border: none; margin-bottom: 16rpx; padding: 18rpx; font-size: 28rpx; }
 
 .ingredient-grid { display: flex; flex-wrap: wrap; gap: 16rpx; }
 .ing-card {
@@ -89,10 +89,10 @@ const goToEdit = (id: string) => uni.navigateTo({ url: `/pages/submit-ingredient
   flex-direction: column; align-items: center; gap: 8rpx;
   box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
 }
-.ing-img { width: 120rpx; height: 120rpx; border-radius: 8rpx; }
+.ing-img { width: 120rpx; height: 120rpx; border-radius: 16rpx; }
 .ing-emoji { font-size: 64rpx; line-height: 120rpx; }
 .ing-placeholder {
-  width: 120rpx; height: 120rpx; border-radius: 8rpx; background: #f0f0f0;
+  width: 120rpx; height: 120rpx; border-radius: 16rpx; background: #f0f0f0;
   display: flex; align-items: center; justify-content: center; font-size: 48rpx; color: #999;
 }
 .ing-name { font-size: 26rpx; font-weight: bold; }
