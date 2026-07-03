@@ -57,17 +57,19 @@
         </view>
         <view v-for="item in order.items" :key="item.dish_id" class="order-item">
           <text>{{ item.dish_name }} × {{ item.quantity }}</text>
-          <button
-            v-if="isOwnOrder(order)"
-            size="mini"
-            class="revoke-btn"
-            @click="handleRevoke(order._id)"
-          >撤销</button>
         </view>
         <view class="order-footer">
-          <button size="mini" class="complete-btn" @click="handleComplete(order._id)">
-            完成
-          </button>
+          <view class="footer-actions">
+            <button
+              v-if="isOwnOrder(order)"
+              size="mini"
+              class="revoke-btn"
+              @click="handleRevoke(order._id)"
+            >撤销</button>
+            <button size="mini" class="complete-btn" @click="handleComplete(order._id)">
+              完成
+            </button>
+          </view>
         </view>
       </view>
     </view>
@@ -89,21 +91,23 @@
         </view>
         <view v-for="item in order.items" :key="item.dish_id" class="order-item">
           <text>{{ item.dish_name }} × {{ item.quantity }}</text>
-          <button
-            v-if="isOwnOrder(order) && order.status !== 'revoked'"
-            size="mini"
-            class="revoke-btn"
-            @click="handleRevoke(order._id)"
-          >撤销</button>
         </view>
         <view class="order-footer">
           <text v-if="order.status === 'revoked'" class="revoked-tag">已撤销</text>
-          <button
-            v-if="order.status === 'revoked' && isOwnOrder(order)"
-            size="mini"
-            class="delete-btn"
-            @click="handleDelete(order._id)"
-          >删除</button>
+          <view class="footer-actions">
+            <button
+              v-if="order.status === 'revoked' && isOwnOrder(order)"
+              size="mini"
+              class="delete-btn"
+              @click="handleDelete(order._id)"
+            >删除</button>
+            <button
+              v-if="isOwnOrder(order) && order.status !== 'revoked'"
+              size="mini"
+              class="revoke-btn"
+              @click="handleRevoke(order._id)"
+            >撤销</button>
+          </view>
         </view>
       </view>
       <view v-if="hasMore" class="load-more" @click="loadMore">加载更多</view>
@@ -269,12 +273,13 @@ onShow(() => {
 .order-avatar-placeholder { width: 48rpx; height: 48rpx; border-radius: 50%; background: #e0e0e0; flex-shrink: 0; }
 .order-user { font-weight: bold; font-size: 28rpx; }
 .order-time { font-size: 24rpx; color: #999; margin-left: auto; flex-shrink: 0; }
-.order-item { display: flex; justify-content: space-between; align-items: center; font-size: 26rpx; color: #333; padding: 8rpx 0; }
-.order-footer { text-align: right; margin-top: 16rpx; }
+.order-item { font-size: 26rpx; color: #333; padding: 8rpx 0; }
+.order-footer { display: flex; align-items: center; gap: 16rpx; margin-top: 16rpx; }
+.footer-actions { margin-left: auto; display: flex; align-items: center; gap: 16rpx; }
 .complete-btn { background: #07C160; color: #fff; border: none; }
 .revoke-btn { background: #fff; color: #fa5151; border: 1px solid #fa5151; }
 .revoked-tag { font-size: 24rpx; color: #999; }
-.delete-btn { background: #fff; color: #999; border: 1px solid #ddd; }
+.delete-btn { background: #fa5151; color: #fff; border: none; }
 
 .load-more { text-align: center; padding: 20rpx; color: #07C160; font-size: 26rpx; }
 .loading, .empty { text-align: center; padding: 80rpx; color: #999; font-size: 28rpx; }
